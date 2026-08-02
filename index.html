@@ -11,8 +11,8 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SwingUpPro">
-  
-<title>SwingUp - Carte de score</title>
+
+<title>SwingUpPro - Carte de score</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -93,13 +93,23 @@ header{padding:calc(20px + env(safe-area-inset-top)) 4px 14px;display:flex;align
 .btn svg{width:18px;height:18px}
 #btnFinish{background:var(--green);box-shadow:none;border-radius:6px}
 
-/* une seule page, pas de défilement vertical pendant la partie */
+/* ---------- écran de partie : plein écran, sans défilement ---------- */
 body.lock{overflow:hidden;height:100dvh}
 body.lock .app{height:100dvh;padding-bottom:calc(6px + env(safe-area-inset-bottom))}
-body.lock #game{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;overflow-y:auto}
-body.lock #game .card-main{flex:0 0 auto;display:block}
-body.lock #game .tscroll{flex:0 0 auto;overflow-x:auto;overflow-y:hidden}
-body.lock #game .playzone,body.lock #game .topbar,body.lock #game #finishWrap{flex:0 0 auto}
+body.lock #game{flex:1 1 auto;display:flex;flex-direction:column;min-height:0}
+body.lock #game .topbar{flex:0 0 auto}
+body.lock #game .card-main{flex:0 1 auto;display:flex;flex-direction:column;min-height:0}
+body.lock #game .card-main .sumstrip{flex:0 0 auto}
+body.lock #game .card-main .tscroll{flex:1 1 auto;min-height:0;overflow:auto}
+body.lock #game .playzone{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;margin-top:10px}
+body.lock #game .holehead{flex:0 0 auto}
+body.lock #game .carousel{flex:1 1 auto;min-height:0}
+body.lock #game .track{height:100%;align-items:stretch}
+body.lock #game .pcard{display:flex;flex-direction:column;justify-content:center}
+body.lock #game .dots{flex:0 0 auto}
+body.lock #game .holenav{flex:0 0 auto;margin-top:auto}
+body.lock #game #finishWrap{flex:0 0 auto}
+
 .resume{margin-top:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;background:rgba(246,243,233,.1);border:1px solid rgba(246,243,233,.18);border-radius:6px}
 .resume .ic{width:40px;height:40px;border-radius:6px;flex:0 0 auto;display:grid;place-items:center;background:rgba(116,198,157,.18);color:var(--green-glow)}
 .resume .ic svg{width:20px;height:20px}
@@ -208,6 +218,8 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .rk .sc2 span.under{color:var(--green-mid)}
 .rk .sc2 span.over{color:var(--flag)}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:70;overflow:hidden}
+#confetti i{position:absolute;top:-14px;width:9px;height:14px;display:block;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.15}}
 
 /* ---------- dialogue ---------- */
 .overlay{position:fixed;inset:0;z-index:80;background:rgba(8,24,15,.62);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px}
@@ -309,7 +321,6 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .acctbtn{margin-left:auto;display:flex;align-items:center;gap:8px;background:rgba(246,243,233,.12);border:none;border-radius:999px;padding:6px 6px 6px 12px;cursor:pointer;color:var(--cream);font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;max-width:150px}
 .acctbtn .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .acctbtn .av{width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:linear-gradient(145deg,#52b788,#1b4332);font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:.9rem;color:#fff}
-.youtag{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--green-mid);padding:3px 8px;border-radius:999px;flex:0 0 auto}
 .nrow.you{border-color:var(--green-mid);background:#f1f9f4}
 .btn-share{background:#fff;color:var(--green-mid);border:1.5px solid var(--green-mid)}
 </style>
@@ -324,7 +335,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 <section id="auth">
   <div class="auth-wrap">
     <div class="auth-head">
-      <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/></svg></div>
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
       <h1>Carte de score</h1>
       <p id="authTagline">Connecte-toi pour retrouver tes parties</p>
     </div>
@@ -356,7 +367,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 <!-- ====================== ECRAN 1 : NOUVELLE PARTIE ====================== -->
 <section id="setup" class="hidden">
   <header>
-    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/></svg></div>
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
     <div class="brand"><h1>Carte de score</h1><p>Parcours en cours</p></div>
     <button class="acctbtn" id="btnAccount" aria-label="Mon compte"><span class="who" id="acctName">—</span><span class="av" id="acctAv">?</span></button>
   </header>
@@ -537,10 +548,7 @@ const $=s=>document.querySelector(s);
 const COLORS=['#2d6a4f','#c9a227','#d62828','#1d5c8a','#7b3fa0','#0e7c7b'];
 
 /* =======================================================================
-   ▼▼▼  CONFIGURATION FIREBASE  —  À REMPLIR (voir le mode d'emploi)  ▼▼▼
-   Colle ici l'objet de configuration donné par la console Firebase
-   (Paramètres du projet → Général → « Configuration du SDK »).
-   Ces valeurs sont publiques : elles peuvent rester dans le fichier.
+   ▼▼▼  CONFIGURATION FIREBASE  ▼▼▼
    ======================================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyAwBree3yDA1TfnrZVePHy-2j3vw4zuFTI",
@@ -550,7 +558,6 @@ const firebaseConfig = {
   messagingSenderId: "1078233196822",
   appId: "1:1078233196822:web:4d241879376a3aec2d4837",
   measurementId: "G-25LM3FQQPK"
- 
 };
 /* ▲▲▲  Rien d'autre à modifier en dessous.  ▲▲▲ */
 
@@ -570,12 +577,12 @@ const Store=(()=>{let mem={};let ok=true;try{localStorage.setItem('__t','1');loc
 })();
 
 /* ---------- session utilisateur ---------- */
-let currentUser=null;          // objet utilisateur Firebase
-let profileName='';            // prénom/pseudo du compte (= toi, joueur 1)
-let dbCache=null;              // base des golfs (chargée du cloud, mise en cache)
+let currentUser=null;
+let profileName='';
+let dbCache=null;
 const uidKey=()=>currentUser?currentUser.uid:'anon';
-const gameKey=()=>'golf-carte-v1:'+uidKey();     // partie en cours (locale, par compte)
-const dbLocalKey=()=>'golf-parcours-v1:'+uidKey();// miroir hors-ligne de la base
+const gameKey=()=>'golf-carte-v1:'+uidKey();
+const dbLocalKey=()=>'golf-parcours-v1:'+uidKey();
 
 /* ---------- état de la partie ---------- */
 let S=null;
@@ -623,7 +630,6 @@ function loadDB(){
   if(changed)saveDB(d);
   return d;
 }
-/* saveDB : met à jour le cache, écrit le miroir local, puis synchronise le cloud (différé) */
 function saveDB(d){
   dbCache=d;
   try{Store.set(dbLocalKey(),JSON.stringify(d));}catch(e){}
@@ -644,13 +650,11 @@ async function pushDB(){
       .set({name:profileName,db:dbCache,updated:Date.now()},{merge:true});
   }catch(e){
     console.error('Sync cloud échouée :',e);
-    syncPending=true;              // on retentera au prochain enregistrement
+    syncPending=true;
     toast('Hors ligne : synchro différée');
   }
 }
-/* chargement initial de la base depuis le cloud (avec repli local) */
 async function pullDB(){
-  /* repli immédiat : cache local pour affichage instantané / hors-ligne */
   try{const r=Store.get(dbLocalKey());dbCache=r?JSON.parse(r):{courses:[]};}catch(e){dbCache={courses:[]};}
   if(!fbReady||!currentUser)return;
   try{
@@ -660,7 +664,6 @@ async function pullDB(){
       if(data.db&&Array.isArray(data.db.courses))dbCache=data.db;
       if(data.name)profileName=data.name;
     }else{
-      /* premier login : on crée le document avec le nom de profil */
       await fs.collection('users').doc(currentUser.uid).set({name:profileName,db:{courses:[]},created:Date.now()},{merge:true});
       dbCache={courses:[]};
     }
@@ -764,10 +767,8 @@ function renderNames(){
   for(let i=0;i<nPlayers;i++){
     const row=document.createElement('div');row.className='nrow'+(i===0?' you':'');
     if(i===0){
-      /* joueur 1 = titulaire du compte, non modifiable ici (se change dans « Mon compte ») */
       row.innerHTML='<span class="pip" style="background:'+COLORS[0]+'">1</span>'+
-        '<input type="text" value="'+esc(profileName||'Moi')+'" readonly style="cursor:default">'+
-        '<span class="youtag">Vous</span>';
+        '<input type="text" value="'+esc(profileName||'Moi')+'" readonly style="cursor:default">';
     }else{
       row.innerHTML='<span class="pip" style="background:'+COLORS[i]+'">'+(i+1)+'</span>'+
         '<input type="text" maxlength="14" placeholder="Invité '+i+'" value="'+(prev[i]?prev[i].replace(/"/g,'&quot;'):'')+'">';
@@ -776,7 +777,6 @@ function renderNames(){
   }
 }
 
-/* choisir un joueur déjà suivi pour cette partie */
 function pickKnownPlayer(i){
   const roster=playerIndex();
   const inputs=[...namesEl.querySelectorAll('input')];
@@ -814,7 +814,6 @@ $('#btnStart').onclick=()=>{
   save();openGame();
 };
 
-/* reprise + accès aux stats */
 function refreshResume(){
   refreshStatsCard();renderNames();
   const saved=S||load();
@@ -840,7 +839,6 @@ function show(id,pop){
   if(id==='setup'){if(guard){guard=false;history.back();}}
   else if(!guard){history.pushState({g:1},'');guard=true;}
 }
-/* bouton retour du téléphone : retour à l'accueil, puis sortie */
 window.addEventListener('popstate',()=>{
   if(!$('#auth').classList.contains('hidden'))return;
   if(!$('#overlay').classList.contains('hidden')){closeModal();history.pushState({g:1},'');return;}
@@ -944,7 +942,6 @@ function renderCards(){
   slide(false);
 }
 
-/* renommer un joueur depuis la carte */
 function rename(i,el){
   const inp=document.createElement('input');
   inp.className='nameedit';inp.type='text';inp.maxLength=14;inp.value=S.players[i].name;
@@ -957,7 +954,6 @@ function rename(i,el){
   inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}if(e.key==='Escape'){done=true;renderAll();}});
 }
 
-/* trou suivant, sauf s'il reste un joueur sans score sur ce trou */
 function advance(){
   setTimeout(()=>{
     const n=S.players.length;
@@ -1049,7 +1045,7 @@ function confetti(){
   const c=$('#confetti');c.innerHTML='';const cols=['#52b788','#c9a227','#d62828','#74c69d','#f6f3e9'];
   for(let i=0;i<60;i++){const p=document.createElement('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%cols.length];
     p.style.animationDuration=(2.2+Math.random()*1.8)+'s';p.style.animationDelay=(Math.random()*.5)+'s';
-    p.style.transform='rotate('+Math.random()*360+'deg)';if(Math.random()>.5)p.style.borderRadius='50%';c.appendChild(p);}
+    if(Math.random()>.5)p.style.borderRadius='50%';c.appendChild(p);}
   setTimeout(()=>c.innerHTML='',4500);
 }
 
@@ -1073,7 +1069,6 @@ function askIncomplete(){
     '<div class="row"><button class="btn btn-ghost" id="mNo">Retour</button><button class="btn btn-primary" id="mYes">Enregistrer</button></div>');
   $('#mNo').onclick=closeModal;$('#mYes').onclick=startSave;
 }
-/* on n'enregistre que TA carte (joueur 1). Les invités restent hors statistiques. */
 function ownerList(){
   const p=S.players[S.owner||0];
   return [{name:profileName||S.ownerName||p.name||'Moi',scores:p.scores.slice()}];
@@ -1119,7 +1114,6 @@ function storeRound(courseId,newName,list){
   }
   if(!Array.isArray(c.layouts))c.layouts=[];
 
-  /* parcours : celui choisi au départ, sinon par nom, sinon un parcours automatique par format */
   let L=S.layoutId?c.layouts.find(l=>l.id===S.layoutId):null;
   if(!L&&S.layoutName)L=c.layouts.find(l=>l.name.trim().toLowerCase()===S.layoutName.trim().toLowerCase()&&l.holes===S.holes);
   if(!L&&!S.layoutName)L=c.layouts.find(l=>l.holes===S.holes&&l.auto);
@@ -1186,7 +1180,6 @@ function renderStats(wantLayout){
   const cid=$('#stCourse').value;
   const who=profileName||'Vous';
 
-  /* toutes tes parties (chaque partie enregistrée ne contient que toi), avant filtre parcours */
   const base=allRounds()
     .filter(e=>cid==='all'||e.c.id===cid)
     .map(e=>{
@@ -1203,7 +1196,6 @@ function renderStats(wantLayout){
     .filter(Boolean)
     .sort((a,b)=>new Date(a.date)-new Date(b.date));
 
-  /* filtre parcours, reconstruit selon le golf choisi */
   const lS=$('#stLayout');
   const seen=[];
   base.forEach(x=>{if(x.L&&!seen.some(l=>l.id===x.L.id))seen.push(x.L);});
@@ -1223,7 +1215,6 @@ function renderStats(wantLayout){
     '<div><div class="n">'+(best!==null?best:'—')+'</div><div class="l">Meilleur tour</div></div>'+
     '<div><div class="n '+(avgD<0?'under':(avgD>0?'over':''))+'">'+(avgD!==null?fmt(Math.round(avgD*10)/10):'—')+'</div><div class="l">Écart moyen</div></div>';
 
-  /* parties jouées : bandeau horizontal de cartes */
   const list=$('#stRounds');list.innerHTML='';
   if(!rows.length){
     list.innerHTML='<div class="rcard"><div class="d">—</div><div class="g">Aucune partie</div><div class="foot"><b>—</b></div></div>';
@@ -1240,7 +1231,6 @@ function renderStats(wantLayout){
   });
   list.querySelectorAll('[data-del]').forEach(b=>b.onclick=e=>{e.stopPropagation();askDeleteRound(b.dataset.c,b.dataset.del);});
 
-  /* évolution trou par trou : un golf et un parcours précis */
   const ok=cid!=='all'&&lid!=='all'&&rows.length>0;
   $('#stEvo').classList.toggle('hidden',!ok);
   $('#btnRenameCourse').disabled=cid==='all';
@@ -1282,7 +1272,6 @@ function renderStats(wantLayout){
     });
     $('#stTable').innerHTML=head+body+'</tbody>';
 
-    /* conseils : trous où le joueur s'écarte le plus du par en moyenne */
     const gaps=[];
     for(let h=0;h<H;h++){
       const vals=rows.map(x=>x.p.scores[h]).filter(s=>typeof s==='number');
@@ -1305,7 +1294,6 @@ function renderStats(wantLayout){
   }else{$('#stAdvice').innerHTML='';}
 }
 
-/* supprimer une partie de la base */
 function askDeleteRound(courseId,rid){
   const db=loadDB();
   const c=db.courses.find(x=>x.id===courseId);
@@ -1326,7 +1314,6 @@ function askDeleteRound(courseId,rid){
   };
 }
 
-/* renommer / supprimer le golf */
 $('#btnRenameCourse').onclick=()=>{
   const cid=$('#stCourse').value;if(cid==='all')return;
   const c=loadDB().courses.find(x=>x.id===cid);if(!c)return;
@@ -1352,7 +1339,6 @@ $('#btnDelCourse2').onclick=()=>{
   };
 };
 
-/* renommer / supprimer le parcours */
 $('#btnRenameLayout').onclick=()=>{
   const cid=$('#stCourse').value,lid=$('#stLayout').value;if(cid==='all'||lid==='all')return;
   const c=loadDB().courses.find(x=>x.id===cid);const L=c&&(c.layouts||[]).find(l=>l.id===lid);if(!L)return;
@@ -1395,57 +1381,115 @@ function refreshStatsCard(){
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function ellipsize(ctx,txt,max){if(ctx.measureText(txt).width<=max)return txt;let t=txt;while(t.length>1&&ctx.measureText(t+'…').width>max)t=t.slice(0,-1);return t+'…';}
 
+function drawFlag(ctx,x,y,s){
+  const u=s/24;
+  ctx.save();ctx.translate(x,y);
+  ctx.strokeStyle='#1b4332';ctx.lineWidth=2.2*u;ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.beginPath();ctx.moveTo(6*u,21*u);ctx.lineTo(6*u,3*u);ctx.lineTo(17*u,7*u);ctx.lineTo(6*u,11*u);ctx.stroke();
+  ctx.fillStyle='#1b4332';ctx.beginPath();ctx.arc(6*u,21*u,1.9*u,0,7);ctx.fill();
+  ctx.fillStyle='#d62828';ctx.beginPath();ctx.arc(14*u,19*u,2.6*u,0,7);ctx.fill();
+  ctx.restore();
+}
+
 async function recapBlob(){
   try{await document.fonts.ready;}catch(e){}
   const F="'Fraunces',Georgia,serif", O="'Outfit',system-ui,sans-serif";
-  const players=S.players;
-  const order=players.map((p,i)=>({p,i,t:played(p),d:vsPar(p),hp:p.scores.filter(x=>x!==null).length})).sort((a,b)=>a.t-b.t);
-  const done=S.pars.map((_,h)=>S.players.every(p=>typeof p.scores[h]==='number')).filter(Boolean).length;
-  const W=540, scale=2, m=20, headH=200, rowH=66, footH=54;
-  const H=headH + order.length*rowH + footH;
-  const cvs=document.createElement('canvas');cvs.width=W*scale;cvs.height=H*scale;
+  const NH=S.holes, players=S.players;
+  const PAD=36, NAMEW=176, TOTW=120;
+  const cellW=NH>18?46:(NH>12?54:64);
+  const rowH=56, headH=170, footH=72;
+  const tableW=NAMEW+NH*cellW+TOTW;
+  const W=PAD*2+tableW;
+  const rows=2+players.length;
+  const HT=headH+rows*rowH+footH;
+  const scale=W>1100?1.5:2;
+
+  const cvs=document.createElement('canvas');
+  cvs.width=Math.round(W*scale);cvs.height=Math.round(HT*scale);
   const ctx=cvs.getContext('2d');ctx.scale(scale,scale);
-  /* fond */
-  const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0f2a1a');g.addColorStop(.5,'#16402a');g.addColorStop(1,'#1b4332');
-  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  /* carte crème */
-  roundRect(ctx,m,m,W-2*m,H-2*m,16);ctx.fillStyle='#f6f3e9';ctx.fill();
-  const cx=W/2, top=m;
-  ctx.textAlign='center';
-  /* en-tête */
-  ctx.fillStyle='#2d6a4f';ctx.font='700 12px '+O;ctx.fillText('C A R T E   D E   S C O R E',cx,top+34);
-  ctx.fillStyle='#13361f';ctx.font='900 30px '+F;
-  ctx.fillText(ellipsize(ctx,S.courseName||'Partie libre',W-2*m-50),cx,top+72);
-  ctx.fillStyle='#5a5848';ctx.font='500 14px '+O;
-  ctx.fillText((S.layoutName?S.layoutName+' · ':'')+S.holes+' trous · par '+parTot(),cx,top+96);
-  ctx.fillStyle='#8b8770';ctx.font='600 11px '+O;
-  ctx.fillText(dmy(S.started||new Date().toISOString())+(done<S.holes?'  ·  carte incomplète':''),cx,top+118);
-  /* séparateur */
-  ctx.strokeStyle='#e2dcc7';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(m+22,top+140);ctx.lineTo(W-m-22,top+140);ctx.stroke();
-  /* lignes joueurs */
-  const medals=['#c9a227','#9a9a9a','#a9743f'];
-  const lx=m+22, rx=W-m-22;
-  order.forEach((o,k)=>{
-    const y=headH + k*rowH;
-    if(k===0&&done===S.holes){roundRect(ctx,m+10,y-6,W-2*m-20,rowH-8,10);ctx.fillStyle='#fffdf3';ctx.fill();ctx.strokeStyle='#c9a227';ctx.lineWidth=1.5;ctx.stroke();}
-    /* pastille rang */
-    ctx.fillStyle=medals[k]||'#8b8770';roundRect(ctx,lx,y+6,30,30,8);ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='900 15px '+F;ctx.textAlign='center';ctx.fillText(String(k+1),lx+15,y+27);
-    /* nom */
-    ctx.textAlign='left';ctx.fillStyle='#13361f';ctx.font='900 18px '+F;
-    let nx=lx+44;
-    const name=ellipsize(ctx,o.p.name,rx-nx-150);
-    ctx.fillText(name,nx,y+21);
-    if(o.p.guest){const nw=ctx.measureText(name).width;ctx.fillStyle='#2d6a4f';ctx.font='700 9px '+O;
-      roundRect(ctx,nx+nw+8,y+9,42,15,7);ctx.fillStyle='#e4f2e9';ctx.fill();ctx.fillStyle='#2d6a4f';ctx.fillText('INVITÉ',nx+nw+13,y+20);}
-    ctx.fillStyle='#8b8770';ctx.font='500 12px '+O;ctx.fillText(o.hp+' trous joués',nx,y+38);
-    /* total + écart */
-    ctx.textAlign='right';ctx.fillStyle='#13361f';ctx.font='900 26px '+F;ctx.fillText(String(o.t),rx,y+26);
-    const dd=o.hp?fmt(o.d):'—';ctx.fillStyle=o.d<0?'#2d6a4f':(o.d>0?'#d62828':'#8b8770');ctx.font='700 12px '+O;ctx.fillText(dd,rx,y+42);
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,HT);
+
+  ctx.textBaseline='alphabetic';
+  ctx.font='900 34px '+F;
+  const title='Récapitulatif';
+  const tw=ctx.measureText(title).width, logoS=34, gap=14;
+  const gx=(W-(logoS+gap+tw))/2;
+  drawFlag(ctx,gx,42,logoS);
+  ctx.textAlign='left';ctx.fillStyle='#13361f';
+  ctx.fillText(title,gx+logoS+gap,72);
+
+  const done=S.pars.map((_,h)=>players.every(p=>typeof p.scores[h]==='number')).filter(Boolean).length;
+  const dt=new Date(S.started||Date.now());
+  const dateTxt=isNaN(dt)?'':dt.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+  const bits=[];
+  if(S.courseName)bits.push(S.courseName+(S.layoutName?' · '+S.layoutName:''));
+  bits.push(done===NH?'Partie terminée':done+'/'+NH+' trous saisis');
+  if(dateTxt)bits.push(dateTxt);
+  bits.push(NH+' trous · par '+parTot());
+  ctx.textAlign='center';ctx.font='500 15px '+O;ctx.fillStyle='#5a5848';
+  ctx.fillText(bits.join('  ·  '),W/2,110);
+
+  const x0=PAD, y0=headH, totX=x0+NAMEW+NH*cellW;
+  const colX=h=>x0+NAMEW+h*cellW;
+  ctx.save();
+  roundRect(ctx,x0,y0,tableW,rows*rowH,12);ctx.clip();
+  ctx.fillStyle='#ece7d6';ctx.fillRect(x0,y0,tableW,rowH);
+  ctx.fillStyle='#f5f1e4';ctx.fillRect(x0,y0+rowH,tableW,rowH);
+  ctx.fillStyle='#ffffff';ctx.fillRect(x0,y0+2*rowH,tableW,players.length*rowH);
+  ctx.strokeStyle='#e6e0cd';ctx.lineWidth=1;
+  for(let r=1;r<rows;r++){ctx.beginPath();ctx.moveTo(x0,y0+r*rowH);ctx.lineTo(x0+tableW,y0+r*rowH);ctx.stroke();}
+  for(let h=0;h<=NH;h++){ctx.beginPath();ctx.moveTo(colX(h),y0);ctx.lineTo(colX(h),y0+rows*rowH);ctx.stroke();}
+  ctx.beginPath();ctx.moveTo(totX,y0);ctx.lineTo(totX,y0+rows*rowH);ctx.stroke();
+  ctx.restore();
+  ctx.strokeStyle='#ddd6c0';ctx.lineWidth=1.5;
+  roundRect(ctx,x0,y0,tableW,rows*rowH,12);ctx.stroke();
+
+  ctx.textBaseline='middle';
+
+  let cy=y0+rowH/2;
+  ctx.textAlign='left';ctx.font='700 15px '+O;ctx.fillStyle='#8b8770';
+  ctx.fillText('Trou',x0+16,cy);
+  ctx.textAlign='center';ctx.font='700 16px '+O;
+  for(let h=0;h<NH;h++)ctx.fillText(String(h+1),colX(h)+cellW/2,cy);
+  ctx.fillText('Tot',totX+TOTW/2,cy);
+
+  cy=y0+rowH+rowH/2;
+  ctx.textAlign='left';ctx.font='700 16px '+O;ctx.fillStyle='#2d6a4f';
+  ctx.fillText('Par',x0+16,cy);
+  ctx.textAlign='center';ctx.font='700 19px '+F;
+  for(let h=0;h<NH;h++)ctx.fillText(String(S.pars[h]),colX(h)+cellW/2,cy);
+  ctx.fillText(String(parTot()),totX+TOTW/2,cy);
+
+  players.forEach((p,i)=>{
+    const y=y0+(2+i)*rowH, my=y+rowH/2;
+    ctx.textAlign='left';ctx.font='900 18px '+F;ctx.fillStyle='#13361f';
+    ctx.fillText(ellipsize(ctx,p.name,NAMEW-30),x0+16,my);
+    ctx.textAlign='center';
+    for(let h=0;h<NH;h++){
+      const s=p.scores[h];
+      if(s===null){ctx.font='600 17px '+F;ctx.fillStyle='#c3bda7';ctx.fillText('·',colX(h)+cellW/2,my);continue;}
+      const diff=s-S.pars[h];
+      if(diff!==0){
+        const good=diff<0;
+        ctx.fillStyle=good?'#e4f2e9':'#fbe6e4';
+        roundRect(ctx,colX(h)+5,y+7,cellW-10,rowH-14,7);ctx.fill();
+        ctx.strokeStyle=good?'#2d6a4f':'#d62828';ctx.lineWidth=1.4;ctx.stroke();
+      }
+      ctx.font='700 19px '+F;
+      ctx.fillStyle=diff<0?'#2d6a4f':(diff>0?'#b3261e':'#2c3a30');
+      ctx.fillText(String(s),colX(h)+cellW/2,my);
+    }
+    const tot=played(p), vp=vsPar(p);
+    const any=p.scores.some(x=>x!==null);
+    ctx.font='900 19px '+F;ctx.fillStyle='#13361f';
+    const lbl=any?tot+' ('+(vp===0?'PAR':(vp>0?'+'+vp:vp))+')':String(tot);
+    ctx.fillText(lbl,totX+TOTW/2,my);
   });
-  /* pied */
-  ctx.textAlign='center';ctx.fillStyle='#b7b29c';ctx.font='500 11px '+O;
-  ctx.fillText('Carte de score · Golf',cx,H-m-18);
+
+  ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  ctx.font='500 13px '+O;ctx.fillStyle='#b7b29c';
+  ctx.fillText('Généré par SwingUpPro',W/2,HT-30);
+
   return await new Promise(res=>cvs.toBlob(res,'image/png',0.95));
 }
 
@@ -1456,7 +1500,7 @@ async function shareRecap(){
     if(!blob){toast('Image indisponible');return;}
     const file=new File([blob],'carte-golf.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({files:[file],title:'Carte de score',
+      await navigator.share({files:[file],title:'SwingUpPro',
         text:(S.courseName?S.courseName+' — ':'')+'ma carte de score au golf'});
     }else{
       const url=URL.createObjectURL(blob);
@@ -1492,7 +1536,7 @@ function showAuth(){
   ['setup','game','recap','stats'].forEach(s=>$('#'+s).classList.add('hidden'));
   $('#auth').classList.remove('hidden');
   document.body.classList.remove('lock');window.scrollTo(0,0);
-  if(configMissing){authError("Configuration Firebase à compléter dans le fichier avant de pouvoir se connecter (voir le mode d'emploi).");$('#btnAuth').classList.add('loading');}
+  if(configMissing){authError("Configuration Firebase à compléter dans le fichier avant de pouvoir se connecter.");$('#btnAuth').classList.add('loading');}
 }
 function enterApp(){
   $('#auth').classList.add('hidden');
@@ -1583,7 +1627,7 @@ async function keepAwake(){try{if('wakeLock'in navigator)wl=await navigator.wake
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!$('#game').classList.contains('hidden'))keepAwake();});
 document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
-  /* ---------- service worker ---------- */
+/* ---------- service worker ---------- */
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('sw.js')
