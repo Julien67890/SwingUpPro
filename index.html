@@ -1582,6 +1582,14 @@ let wl=null;
 async function keepAwake(){try{if('wakeLock'in navigator)wl=await navigator.wakeLock.request('screen');}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!$('#game').classList.contains('hidden'))keepAwake();});
 document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+
+  /* ---------- service worker ---------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js')
+      .catch(e=>console.warn('SW non enregistré :',e));
+  });
+}
 </script>
 </body>
 </html>
