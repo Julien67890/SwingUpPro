@@ -204,7 +204,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .holenav button:disabled{opacity:.35}
 .holenav button:active{transform:scale(.98)}
 .holenav svg{width:16px;height:16px}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:rgba(19,54,31,.94);color:var(--cream);font-size:.85rem;font-weight:500;padding:11px 20px;border-radius:999px;z-index:60;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:rgba(19,54,31,.94);color:var(--cream);font-size:.85rem;font-weight:500;padding:11px 20px;border-radius:999px;z-index:90;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 /* ---------- récap ---------- */
@@ -330,6 +330,20 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .acctbtn .av{width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:linear-gradient(145deg,#52b788,#1b4332);font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:.9rem;color:#fff}
 .nrow.you{border-color:var(--green-mid);background:#f1f9f4}
 .btn-share{background:#fff;color:var(--green-mid);border:1.5px solid var(--green-mid)}
+
+/* ---------- premium : apercu gratuit ---------- */
+#stEvoWrap{position:relative}
+#stEvoWrap.locked #stEvo{filter:blur(5px);opacity:.4;pointer-events:none;user-select:none}
+#stTease{position:absolute;inset:0;display:grid;place-items:center;padding:16px}
+.teasecard{width:100%;max-width:330px;text-align:center;background:var(--cream);border:1.5px solid #e6e0cd;border-radius:6px;box-shadow:var(--shadow);padding:20px 18px}
+.teasecard>svg{width:26px;height:26px;color:var(--gold);margin-bottom:9px}
+.teasecard b{display:block;font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:1.1rem;color:var(--green-deep)}
+.teasecard span{display:block;font-size:.82rem;color:#5a5848;line-height:1.45;margin:7px 0 14px}
+.morecard{align-items:center;justify-content:center;text-align:center;border-style:dashed;border-color:#d9d3bf;background:#faf8f1}
+.morecard .lockic{color:var(--gold);margin-bottom:6px}
+.morecard .lockic svg{width:22px;height:22px}
+.morecard .g{-webkit-line-clamp:3;margin-top:0}
+.morecard .hn{margin-top:6px;color:var(--green-mid);font-weight:600}
 
 /* ---------- premium : etats verrouilles ---------- */
 .propill{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(201,162,39,.22);color:#8a6f00;padding:3px 8px;border-radius:999px;margin-left:2px}
@@ -615,15 +629,18 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
     <div class="hstrip" id="stRounds"></div>
     <p class="flabel" style="padding:0 18px">Évolution trou par trou</p>
     <p class="hintline" id="stHint"></p>
-    <div id="stEvo">
-      <div class="tscroll"><table class="score" id="stTable"></table></div>
-      <div class="legend">
-        <span><i class="lg birdie"></i>Birdie</span>
-        <span><i class="lg eagle"></i>Eagle +</span>
-        <span><i class="lg bogey"></i>Bogey</span>
-        <span><i class="lg dbl"></i>Double +</span>
+    <div id="stEvoWrap">
+      <div id="stEvo">
+        <div class="tscroll"><table class="score" id="stTable"></table></div>
+        <div class="legend">
+          <span><i class="lg birdie"></i>Birdie</span>
+          <span><i class="lg eagle"></i>Eagle +</span>
+          <span><i class="lg bogey"></i>Bogey</span>
+          <span><i class="lg dbl"></i>Double +</span>
+        </div>
+        <div id="stAdvice"></div>
       </div>
-      <div id="stAdvice"></div>
+      <div id="stTease" class="hidden"></div>
     </div>
   </div>
 
@@ -679,8 +696,10 @@ const firebaseConfig = {
    ======================================================================= */
 const PREMIUM={
   name:'SwingUpPro Premium',
-  price:'2,99 € / mois',              /* texte affiché, purement cosmétique */
-  note:'Sans engagement, résiliable à tout moment.',
+  price:'2,90 €',                     /* texte affiché, purement cosmétique */
+  note:'Paiement unique, débloqué sur tous tes appareils.',
+  /* Nombre de parties visibles sans abonnement, dans les statistiques. */
+  freeRounds:3,
   /* URL des Cloud Functions. Tant qu'elles valent null, le bouton
      annonce simplement que le paiement arrive bientôt. */
   checkoutUrl:null,  /* ex. https://europe-west1-swingup-92a94.cloudfunctions.net/createCheckoutSession */
@@ -690,6 +709,7 @@ const PREMIUM={
   test:null
 };
 /* ▲▲▲  Rien d'autre à modifier en dessous.  ▲▲▲ */
+const FREE_ROUNDS=Math.max(1,PREMIUM.freeRounds||3);
 
 let auth=null, fs=null, fbReady=false;
 try{
@@ -1304,7 +1324,7 @@ function refreshRecapButtons(){$('#btnSaveRound').classList.toggle('hidden',!!(S
 $('#btnSaveRound').onclick=()=>{if(ownerComplete())startSave();else askIncomplete();};
 
 /* ---------- statistiques ---------- */
-$('#statsCard').onclick=()=>{if(isPremium())openStats();else openPaywall('stats');};
+$('#statsCard').onclick=()=>openStats();
 $('#btnStatsBack').onclick=()=>{refreshResume();show('setup');};
 
 function allRounds(){
@@ -1324,7 +1344,6 @@ function playerIndex(){
 function dmy(iso){const d=new Date(iso);return isNaN(d)?'—':d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'});}
 
 function openStats(courseId,layoutId){
-  if(!isPremium()){openPaywall('stats');return;}
   show('stats');
   const db=loadDB();
   const has=db.courses.length>0&&db.courses.some(c=>c.rounds.length>0);
@@ -1378,11 +1397,15 @@ function renderStats(wantLayout){
     '<div><div class="n">'+(best!==null?best:'—')+'</div><div class="l">Meilleur tour</div></div>'+
     '<div><div class="n '+(avgD<0?'under':(avgD>0?'over':''))+'">'+(avgD!==null?fmt(Math.round(avgD*10)/10):'—')+'</div><div class="l">Écart moyen</div></div>';
 
+  const pro=isPremium();
+  const shown=pro?rows.slice().reverse():rows.slice(-FREE_ROUNDS).reverse();
+  const caches=rows.length-shown.length;
+
   const list=$('#stRounds');list.innerHTML='';
   if(!rows.length){
     list.innerHTML='<div class="rcard" style="cursor:default"><div class="d">—</div><div class="g">Aucune partie</div><div class="foot"><b>—</b></div></div>';
   }
-  rows.slice().reverse().forEach(x=>{
+  shown.forEach(x=>{
     const div=document.createElement('div');div.className='rcard';
     div.setAttribute('role','button');div.setAttribute('tabindex','0');
     div.title='Modifier cette partie';
@@ -1397,9 +1420,30 @@ function renderStats(wantLayout){
     list.appendChild(div);
   });
   list.querySelectorAll('[data-del]').forEach(b=>b.onclick=e=>{e.stopPropagation();askDeleteRound(b.dataset.c,b.dataset.del);});
+  if(caches>0){
+    const more=document.createElement('div');
+    more.className='rcard morecard';
+    more.setAttribute('role','button');more.setAttribute('tabindex','0');
+    more.innerHTML='<div class="lockic">'+ICON_LOCK+'</div>'+
+      '<div class="g">'+caches+(caches>1?' parties plus anciennes':' partie plus ancienne')+'</div>'+
+      '<div class="hn">Voir tout l\'historique</div>';
+    more.onclick=()=>openPaywall('historique');
+    more.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPaywall('historique');}};
+    list.appendChild(more);
+  }
 
   const ok=cid!=='all'&&lid!=='all'&&rows.length>0;
   $('#stEvo').classList.toggle('hidden',!ok);
+  $('#stEvoWrap').classList.toggle('locked',ok&&!pro);
+  const tz=$('#stTease');
+  tz.classList.toggle('hidden',!(ok&&!pro));
+  if(ok&&!pro){
+    tz.innerHTML='<div class="teasecard">'+ICON_LOCK+
+      '<b>Évolution trou par trou</b>'+
+      '<span>Compare chaque trou d\'une partie à l\'autre, repère ceux qui te coûtent des coups et suis tes progrès.</span>'+
+      '<button class="btn btn-primary" id="stUnlock">Débloquer · '+esc(PREMIUM.price)+'</button></div>';
+    const u=$('#stUnlock');if(u)u.onclick=()=>openPaywall('stats');
+  }
   $('#btnRenameCourse').disabled=cid==='all';
   $('#btnDelCourse2').disabled=cid==='all';
   $('#btnRenameLayout').disabled=cid==='all'||lid==='all';
@@ -1408,7 +1452,10 @@ function renderStats(wantLayout){
     cid==='all'?"Choisis un golf puis un parcours pour suivre l'évolution trou par trou."
     :(!base.length?'Aucune partie enregistrée ici pour ce joueur.'
     :(lid==='all'?'Choisis un parcours pour comparer les trous d\'une partie à l\'autre.'
-    :(rows.length?'De la partie la plus récente (en haut) à la plus ancienne. Touche une partie pour la modifier.':'Aucune partie sur ce parcours.')));
+    :(rows.length?(pro
+        ? 'De la partie la plus récente (en haut) à la plus ancienne. Touche une partie pour la modifier.'
+        : 'Aperçu gratuit : tes '+FREE_ROUNDS+' dernières parties. Touche une partie pour la modifier.')
+      :'Aucune partie sur ce parcours.')));
 
   if(ok){
     const H=rows[0].H;
@@ -1771,9 +1818,7 @@ function refreshStatsCard(){
   $('#statsCard').classList.toggle('hidden',n===0);
   if(n){
     const parties=db.courses.reduce((a,c)=>a+c.rounds.length,0);
-    $('#statsInfo').textContent=isPremium()
-      ? n+(n>1?' golfs':' golf')+' · '+parties+(parties>1?' parties':' partie')
-      : 'Réservé à l\'offre Premium';
+    $('#statsInfo').textContent=n+(n>1?' golfs':' golf')+' · '+parties+(parties>1?' parties':' partie');
   }
   refreshPremiumUI();
 }
@@ -1922,24 +1967,23 @@ function refreshPremiumUI(){
     b.classList.toggle('locked',!ok);
     b.innerHTML=(ok?ICON_SHARE:ICON_LOCK)+'Partager le récapitulatif'+(ok?'':'<span class="propill">Premium</span>');
   }
-  const card=$('#statsCard'),arw=$('#statsArrow');
-  if(card&&arw){
-    card.classList.toggle('locked',!ok);
-    arw.innerHTML=ok?'›':ICON_LOCK;
-  }
 }
 
 function openPaywall(origin){
   const feats=[
-    ['Statistiques complètes','Évolution trou par trou, moyennes, meilleur tour et trous à travailler.'],
-    ['Partage du récapitulatif','L\'image de ta carte de score, prête à envoyer.'],
-    ['Historique synchronisé','Toutes tes parties conservées et retrouvées sur chaque appareil.']
+    ['Évolution trou par trou','Le tableau complet, partie après partie, avec les moyennes par trou.'],
+    ['Trous à travailler','L\'analyse de ta forme du moment et des trous qui te coûtent des coups.'],
+    ['Historique complet','Toutes tes parties, pas seulement les '+FREE_ROUNDS+' dernières.'],
+    ['Partage du récapitulatif','L\'image de ta carte de score, prête à envoyer.']
   ];
+  const intro={
+    share:'Le partage du récapitulatif fait partie de l\'offre Premium.',
+    historique:'L\'historique complet fait partie de l\'offre Premium.',
+    stats:'Le détail trou par trou fait partie de l\'offre Premium.'
+  }[origin]||'Voici ce que débloque l\'offre Premium.';
   const check='<svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   openModal('<h3>'+esc(PREMIUM.name)+'</h3>'+
-    '<p class="txt">'+(origin==='share'
-      ? 'Le partage du récapitulatif fait partie de l\'offre Premium.'
-      : 'Le suivi statistique fait partie de l\'offre Premium.')+'</p>'+
+    '<p class="txt">'+intro+'</p>'+
     '<div class="plan">'+
       feats.map(f=>'<div class="feat">'+check+'<div><b>'+f[0]+'</b><span>'+f[1]+'</span></div></div>').join('')+
       '<div class="price">'+esc(PREMIUM.price)+'</div>'+
@@ -1958,7 +2002,14 @@ function openPaywall(origin){
 }
 
 async function startCheckout(){
-  if(!PREMIUM.checkoutUrl){toast('Paiement bientôt disponible');return;}
+  if(!PREMIUM.checkoutUrl){
+    openModal('<h3>Paiement pas encore ouvert</h3>'+
+      '<p class="txt">L\'abonnement n\'est pas encore en service : les Cloud Functions qui gèrent le paiement ne sont pas déployées.</p>'+
+      '<p class="txt">Écris-nous si tu veux être prévenu·e de son ouverture.</p>'+
+      '<div class="row"><button class="btn btn-primary" id="mOk">Compris</button></div>');
+    $('#mOk').onclick=closeModal;
+    return;
+  }
   if(!currentUser){toast('Connecte-toi d\'abord');return;}
   const btn=$('#mGo');
   if(btn){btn.classList.add('loading');btn.textContent='Un instant…';}
@@ -1980,7 +2031,13 @@ async function startCheckout(){
 }
 
 async function openPortal(){
-  if(!PREMIUM.portalUrl||!currentUser){toast('Gestion bientôt disponible');return;}
+  if(!PREMIUM.portalUrl||!currentUser){
+    openModal('<h3>Gestion pas encore ouverte</h3>'+
+      '<p class="txt">Le portail de gestion de l\'abonnement n\'est pas encore en service.</p>'+
+      '<div class="row"><button class="btn btn-primary" id="mOk">Compris</button></div>');
+    $('#mOk').onclick=closeModal;
+    return;
+  }
   try{
     const token=await currentUser.getIdToken();
     const res=await fetch(PREMIUM.portalUrl,{
