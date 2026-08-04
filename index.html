@@ -8,6 +8,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SwingUpPro">
@@ -139,6 +142,9 @@ tr.parrow td,tr.parrow th{background:#f0ece0;font-weight:600;color:var(--green-m
 tr.prow th{cursor:pointer}
 tr.prow.act .hcol{background:#e4f2e9;color:var(--green-deep);box-shadow:inset 3px 0 0 var(--green-mid)}
 tr.prow.act td{background:rgba(82,183,136,.07)}
+/* colonne « Tot » figée : fond 100% opaque, sinon les scores défilent par transparence.
+   #ebefe2 = le cream + le voile vert de la ligne active, aplati. */
+table.score tr.prow.act td.totcol{background:#ebefe2}
 .col-now{box-shadow:inset 0 0 0 1.5px rgba(45,106,79,.35);background:rgba(201,162,39,.09)!important}
 thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .pip-name{display:inline-flex;align-items:center;gap:7px;max-width:100%}
@@ -291,6 +297,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .advice{margin:0 18px 18px;background:#fff;border:1.5px solid #e6e0cd;border-radius:6px;padding:14px 16px}
 .advice h4{font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:1rem;color:var(--green-deep);margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .advice h4 svg{width:18px;height:18px;color:var(--gold)}
+.advice .note{font-size:.72rem;color:#8b8770;line-height:1.4;margin:-2px 0 11px}
 .advice ul{list-style:none;display:grid;gap:8px}
 .advice li{display:flex;align-items:baseline;gap:9px;font-size:.86rem;color:#5a5848;line-height:1.4}
 .advice li b{font-family:'Fraunces',Georgia,serif;font-weight:900;color:var(--flag);flex:0 0 auto;min-width:52px}
@@ -323,12 +330,83 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .acctbtn .av{width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:linear-gradient(145deg,#52b788,#1b4332);font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:.9rem;color:#fff}
 .nrow.you{border-color:var(--green-mid);background:#f1f9f4}
 .btn-share{background:#fff;color:var(--green-mid);border:1.5px solid var(--green-mid)}
+
+/* ---------- ecran de demarrage ---------- */
+#boot{position:fixed;inset:0;z-index:200;display:grid;place-items:center;
+  background:radial-gradient(1200px 600px at 85% -10%, rgba(116,198,157,.30), transparent 60%),
+             radial-gradient(900px 500px at -10% 110%, rgba(45,106,79,.25), transparent 55%),
+             linear-gradient(160deg,#0f2a1a 0%,#16402a 45%,#1b4332 100%);
+  transition:opacity .55s ease,visibility .55s}
+#boot.off{opacity:0;visibility:hidden;pointer-events:none}
+.bootin{text-align:center;padding:0 24px;transform:translateY(-5%)}
+.bootmark{width:98px;height:98px;margin:0 auto 24px;border-radius:24px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#52b788,#1b4332);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 28px 52px -22px rgba(0,0,0,.8);
+  animation:bootpop .65s cubic-bezier(.2,.9,.3,1.25) both}
+.bootmark svg{width:54px;height:54px;overflow:visible}
+.bootmark .pole{stroke-dasharray:60;stroke-dashoffset:60;animation:bootdraw .8s .2s cubic-bezier(.4,0,.2,1) forwards}
+.bootmark .foot{opacity:0;animation:bootfoot .3s .9s ease forwards}
+.bootmark .ball{opacity:0;transform-box:fill-box;transform-origin:center;animation:bootball .6s 1s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes bootpop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+@keyframes bootdraw{to{stroke-dashoffset:0}}
+@keyframes bootfoot{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+@keyframes bootball{0%{opacity:0;transform:translateY(-10px) scale(.5)}55%{opacity:1}100%{opacity:1;transform:none}}
+.bootword{font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:2rem;line-height:1;letter-spacing:-.025em;color:var(--cream);
+  opacity:0;animation:rise .55s .45s cubic-bezier(.2,.7,.3,1) forwards}
+.bootword em{font-style:italic;color:var(--green-glow)}
+.boottag{margin-top:10px;font-size:.68rem;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:rgba(116,198,157,.85);
+  opacity:0;animation:rise .55s .62s cubic-bezier(.2,.7,.3,1) forwards}
+.bootbar{width:96px;height:2px;margin:26px auto 0;border-radius:2px;background:rgba(246,243,233,.14);overflow:hidden}
+.bootbar i{display:block;width:40%;height:100%;border-radius:2px;background:var(--green-glow);animation:bootsweep 1.25s .3s cubic-bezier(.5,0,.5,1) infinite}
+@keyframes bootsweep{from{transform:translateX(-110%)}to{transform:translateX(360%)}}
+
+/* ---------- modification d'une partie enregistree ---------- */
+.rcard{cursor:pointer;transition:transform .12s,border-color .18s}
+.rcard:active{transform:scale(.97);border-color:var(--green-mid)}
+.holegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;max-height:38dvh;overflow:auto;padding:2px}
+.hcell{border:1.5px solid #e6e0cd;border-radius:6px;background:#fff;padding:7px 8px}
+.hcell.diff{border-color:var(--flag);background:#fffaf9}
+.hcell .t{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8b8770}
+.hcell .fields{display:flex;gap:6px;margin-top:4px}
+.hcell input{flex:1;min-width:0;width:100%;margin-top:0;padding:7px 4px;text-align:center;font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:1rem;color:var(--green-deep);border:1.5px solid #ece7d6;-moz-appearance:textfield}
+.hcell input::-webkit-outer-spin-button,.hcell input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.hcell input.par{font-family:'Outfit',sans-serif;font-weight:600;font-size:.9rem;color:#8b8770;background:#faf8f1}
+.hcell input:focus{border-color:var(--green-mid)}
+.hcell .was{font-size:.58rem;color:var(--flag);margin-top:3px;font-weight:600}
+.gridlbl{display:flex;gap:6px;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8b8770;margin-top:12px}
+.gridlbl span{flex:1;text-align:center}
+.optline{display:flex;align-items:center;gap:10px;margin-top:12px;background:#fff;border:1.5px solid #e6e0cd;border-radius:6px;padding:11px 12px;cursor:pointer}
+.optline input{width:18px;height:18px;margin:0;flex:0 0 auto;accent-color:var(--green-mid)}
+.optline span{font-size:.84rem;color:#5a5848;line-height:1.35}
+.trend{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:6px;white-space:nowrap}
+.trend.dn{background:var(--ok-bg);color:var(--ok)}
+.trend.up{background:var(--bad-bg);color:var(--bad)}
+.trend.eq{background:rgba(139,135,112,.16);color:#6f6c5a}
+.advice .gain{margin-top:12px;padding-top:12px;border-top:1px solid #ece7d6;font-size:.84rem;color:var(--green-mid);line-height:1.45}
+.advice .gain b{font-family:'Fraunces',Georgia,serif;color:var(--green-mid)}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
+
+<!-- ====================== ECRAN DE DEMARRAGE ====================== -->
+<div id="boot">
+  <div class="bootin">
+    <div class="bootmark">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path class="pole" d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle class="foot" cx="6" cy="21" r="1.6" fill="#f6f3e9"/>
+        <g class="ball"><circle cx="14.6" cy="19.4" r="2.7" fill="#d62828"/><circle cx="13.8" cy="18.6" r=".75" fill="#fff" fill-opacity=".55"/></g>
+      </svg>
+    </div>
+    <h1 class="bootword">SwingUp<em>Pro</em></h1>
+    <p class="boottag">Carte de score</p>
+    <div class="bootbar"><i></i></div>
+  </div>
+</div>
+
 <div class="app">
 
 <!-- ====================== ECRAN 0 : CONNEXION ====================== -->
@@ -546,6 +624,19 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 <script>
 const $=s=>document.querySelector(s);
 const COLORS=['#2d6a4f','#c9a227','#d62828','#1d5c8a','#7b3fa0','#0e7c7b'];
+
+/* ---------- ecran de demarrage ---------- */
+const BOOT_T0=Date.now(), BOOT_MIN=1350;
+let bootHidden=false;
+function hideBoot(){
+  if(bootHidden)return;bootHidden=true;
+  setTimeout(()=>{
+    const b=$('#boot');if(!b)return;
+    b.classList.add('off');
+    setTimeout(()=>{if(b.parentNode)b.parentNode.removeChild(b);},650);
+  },Math.max(0,BOOT_MIN-(Date.now()-BOOT_T0)));
+}
+setTimeout(hideBoot,7000); /* filet de securite si le reseau ne repond pas */
 
 /* =======================================================================
    ▼▼▼  CONFIGURATION FIREBASE  ▼▼▼
@@ -1217,10 +1308,14 @@ function renderStats(wantLayout){
 
   const list=$('#stRounds');list.innerHTML='';
   if(!rows.length){
-    list.innerHTML='<div class="rcard"><div class="d">—</div><div class="g">Aucune partie</div><div class="foot"><b>—</b></div></div>';
+    list.innerHTML='<div class="rcard" style="cursor:default"><div class="d">—</div><div class="g">Aucune partie</div><div class="foot"><b>—</b></div></div>';
   }
   rows.slice().reverse().forEach(x=>{
     const div=document.createElement('div');div.className='rcard';
+    div.setAttribute('role','button');div.setAttribute('tabindex','0');
+    div.title='Modifier cette partie';
+    div.onclick=()=>openEditRound(x.c.id,x.r.id||x.date);
+    div.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openEditRound(x.c.id,x.r.id||x.date);}};
     div.innerHTML='<div class="d">'+dmy(x.date)+'</div>'+
       '<button class="del" data-del="'+(x.r.id||x.date)+'" data-c="'+x.c.id+'" aria-label="Supprimer cette partie">'+
       '<svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>'+
@@ -1241,7 +1336,7 @@ function renderStats(wantLayout){
     cid==='all'?"Choisis un golf puis un parcours pour suivre l'évolution trou par trou."
     :(!base.length?'Aucune partie enregistrée ici pour ce joueur.'
     :(lid==='all'?'Choisis un parcours pour comparer les trous d\'une partie à l\'autre.'
-    :(rows.length?'De la partie la plus ancienne (en haut) à la plus récente.':'Aucune partie sur ce parcours.')));
+    :(rows.length?'De la partie la plus récente (en haut) à la plus ancienne. Touche une partie pour la modifier.':'Aucune partie sur ce parcours.')));
 
   if(ok){
     const H=rows[0].H;
@@ -1261,7 +1356,7 @@ function renderStats(wantLayout){
       body+='<td><span class="av '+cls+'">'+(a===null?'·':a.toFixed(1))+'</span></td>';
     }
     body+='<td class="totcol">'+avgTot.toFixed(0)+'</td></tr>';
-    rows.forEach(x=>{
+    rows.slice().reverse().forEach(x=>{
       body+='<tr class="prow"><th class="hcol">'+dmy(x.date)+'</th>';
       for(let h=0;h<H;h++){
         const s=x.p.scores[h];
@@ -1272,26 +1367,58 @@ function renderStats(wantLayout){
     });
     $('#stTable').innerHTML=head+body+'</tbody>';
 
-    const gaps=[];
-    for(let h=0;h<H;h++){
-      const vals=rows.map(x=>x.p.scores[h]).filter(s=>typeof s==='number');
-      if(!vals.length)continue;
-      const avg=vals.reduce((u,v)=>u+v,0)/vals.length;
-      const d=avg-(ref[h]||4);
-      if(d>0.05)gaps.push({h:h+1,d:d,par:ref[h]||4,avg:avg});
-    }
-    gaps.sort((a,b)=>b.d-a.d);
-    const adv=$('#stAdvice');
-    if(!gaps.length){
-      adv.innerHTML='<div class="advice"><div class="ok"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Aucun trou au-dessus du par en moyenne. Beau jeu !</div></div>';
-    }else{
-      const top=gaps.slice(0,3);
-      adv.innerHTML='<div class="advice"><h4><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Trous à travailler</h4><ul>'+
-        top.map(g=>'<li><b>Trou '+g.h+'</b><span>par '+g.par+', tu tournes à '+g.avg.toFixed(1)+' en moyenne (+'+g.d.toFixed(1)+'). '+
-          (g.d>=2?'C\'est là que tu perds le plus.':g.d>=1?'Un coup à gratter régulièrement.':'Léger surplus à surveiller.')+'</span></li>').join('')+
-        '</ul></div>';
-    }
+    renderAdvice(rows,ref,H);
   }else{$('#stAdvice').innerHTML='';}
+}
+
+/* ---------- conseils : la forme récente pèse plus lourd que l'historique ----------
+   rows est trié du plus ancien au plus récent.
+   - moyenne pondérée : la dernière partie compte 1, la précédente 0.7, puis 0.49…
+   - un trou réglé sur les dernières sorties sort de la liste « à travailler »
+   - la tendance compare les 3 dernières parties aux précédentes             */
+const RECENT_N=3, DECAY=.7;
+function renderAdvice(rows,ref,H){
+  const adv=$('#stAdvice'),nR=rows.length;
+  const gaps=[],fixed=[];
+  for(let h=0;h<H;h++){
+    const par=ref[h]||4,vals=[];
+    rows.forEach((x,i)=>{const s=x.p.scores[h];if(typeof s==='number')vals.push({i:i,s:s});});
+    if(!vals.length)continue;
+    const avg=vals.reduce((a,v)=>a+v.s,0)/vals.length;
+    let ws=0,w=0;
+    vals.forEach(v=>{const k=Math.pow(DECAY,nR-1-v.i);ws+=k*v.s;w+=k;});
+    const rec=vals.slice(-RECENT_N),old=vals.slice(0,-RECENT_N);
+    const recAvg=rec.reduce((a,v)=>a+v.s,0)/rec.length;
+    const oldAvg=old.length?old.reduce((a,v)=>a+v.s,0)/old.length:null;
+    const o={h:h+1,par:par,avg:avg,rec:recAvg,recN:rec.length,hist:old.length,
+             trend:oldAvg===null?null:recAvg-oldAvg,d:ws/w-par,dAvg:avg-par,dRec:recAvg-par};
+    if(o.dRec>.05)gaps.push(o);
+    else if(o.dAvg>.25&&o.trend!==null&&o.trend<-.25)fixed.push(o);
+  }
+  gaps.sort((a,b)=>b.d-a.d);
+
+  const pill=t=>t===null?'':'<span class="trend '+(t<=-.15?'dn':(t>=.15?'up':'eq'))+'">'+
+    (t<=-.15?'▼ '+Math.abs(t).toFixed(1):(t>=.15?'▲ +'+t.toFixed(1):'stable'))+'</span>';
+  const gainLine=fixed.length?'<div class="gain">Réglé récemment : '+
+    fixed.sort((a,b)=>a.trend-b.trend).map(g=>'<b>trou '+g.h+'</b> ('+g.avg.toFixed(1)+' de moyenne, '+g.rec.toFixed(1)+' sur tes dernières sorties)').join(', ')+
+    '. Continue comme ça.</div>':'';
+
+  if(!gaps.length){
+    adv.innerHTML='<div class="advice"><div class="ok"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+      'Aucun trou au-dessus du par sur tes dernières parties. Beau jeu !</div>'+gainLine+'</div>';
+    return;
+  }
+  adv.innerHTML='<div class="advice"><h4><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Trous à travailler</h4>'+
+    '<p class="note">Classement basé sur ta forme du moment : tes parties récentes comptent plus que les anciennes.</p><ul>'+
+    gaps.slice(0,3).map(g=>{
+      const solo=g.hist===0;
+      const chiffres=solo
+        ? 'par '+g.par+', tu tournes à '+g.avg.toFixed(1)+' (+'+g.dAvg.toFixed(1)+') sur '+nR+(nR>1?' parties':' partie')+'.'
+        : 'par '+g.par+', '+g.rec.toFixed(1)+' sur tes '+g.recN+' dernières parties (moyenne globale '+g.avg.toFixed(1)+').';
+      const sev=g.dRec>=2?"C'est là que tu perds le plus.":g.dRec>=1?'Un coup à gratter à chaque passage.':'Léger surplus à surveiller.';
+      const tr=g.trend===null?'':(g.trend<=-.25?" Tu progresses déjà dessus, garde le cap.":g.trend>=.25?" Et ça se dégrade par rapport à avant.":" Stable d'une partie à l'autre.");
+      return '<li><b>Trou '+g.h+'</b><span>'+chiffres+pill(g.trend)+'<br>'+sev+tr+'</span></li>';
+    }).join('')+'</ul>'+gainLine+'</div>';
 }
 
 function askDeleteRound(courseId,rid){
@@ -1314,18 +1441,96 @@ function askDeleteRound(courseId,rid){
   };
 }
 
+/* ---------- outils communs renommage / fusion ---------- */
+const sameArr=(a,b)=>Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((v,i)=>v===b[i]);
+const pad2=n=>String(n).padStart(2,'0');
+function isoDay(iso){const d=new Date(iso);return isNaN(d)?'':d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+/* pars d'un parcours : ceux enregistrés, sinon ceux de sa partie la plus récente */
+function layoutPars(c,L){
+  if(Array.isArray(L.pars)&&L.pars.length===L.holes)return L.pars.slice();
+  const rs=(c.rounds||[]).filter(r=>r.layoutId===L.id&&Array.isArray(r.pars)&&r.pars.length===L.holes)
+    .sort((a,b)=>new Date(b.date)-new Date(a.date));
+  return rs.length?rs[0].pars.slice():Array(L.holes).fill(4);
+}
+function parsGridHTML(pars,other){
+  return '<div class="holegrid">'+pars.map((p,i)=>{
+    const diff=other&&other[i]!==p;
+    return '<div class="hcell'+(diff?' diff':'')+'"><div class="t">Trou '+(i+1)+'</div>'+
+      '<div class="fields"><input class="par" type="number" inputmode="numeric" min="1" max="10" data-par="'+i+'" value="'+p+'"></div>'+
+      (diff?'<div class="was">actuel : '+other[i]+'</div>':'')+'</div>';
+  }).join('')+'</div>';
+}
+function readPars(H,fallback){
+  const out=[];
+  for(let i=0;i<H;i++){
+    const el=document.querySelector('#overlay [data-par="'+i+'"]');
+    let v=el?parseInt(el.value,10):NaN;
+    if(!(v>=1&&v<=10))v=(fallback&&fallback[i])||4;
+    out.push(v);
+  }
+  return out;
+}
+
 $('#btnRenameCourse').onclick=()=>{
   const cid=$('#stCourse').value;if(cid==='all')return;
   const c=loadDB().courses.find(x=>x.id===cid);if(!c)return;
-  openModal('<h3>Renommer le golf</h3><input id="mName" type="text" maxlength="30" value="'+esc(c.name)+'">'+
+  askRenameCourse(cid,c.name);
+};
+function askRenameCourse(cid,val){
+  openModal('<h3>Renommer le golf</h3><input id="mName" type="text" maxlength="30" value="'+esc(val)+'">'+
     '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Renommer</button></div>');
   $('#mCancel').onclick=closeModal;$('#mName').focus();$('#mName').select();
   $('#mOk').onclick=()=>{
     const v=$('#mName').value.trim();if(!v){$('#mName').focus();return;}
-    const db=loadDB();const cc=db.courses.find(x=>x.id===cid);if(cc)cc.name=v;saveDB(db);
+    const db=loadDB();const cc=db.courses.find(x=>x.id===cid);if(!cc){closeModal();return;}
+    const twin=db.courses.find(x=>x.id!==cid&&x.name.trim().toLowerCase()===v.toLowerCase());
+    if(twin){askMergeCourses(cid,twin.id,v);return;}
+    cc.name=v;saveDB(db);
+    if(S&&S.courseId===cid)S.courseName=v,save();
     closeModal();openStats(cid);toast('Golf renommé');
   };
-};
+}
+function askMergeCourses(fromId,toId,name){
+  const db=loadDB();
+  const A=db.courses.find(x=>x.id===fromId),B=db.courses.find(x=>x.id===toId);
+  if(!A||!B){closeModal();return;}
+  const nA=A.rounds.length,nB=B.rounds.length;
+  openModal('<h3>Ce golf existe déjà</h3>'+
+    '<p class="txt">Un golf <b>'+esc(B.name)+'</b> est déjà enregistré ('+nB+(nB>1?' parties':' partie')+').</p>'+
+    '<p class="txt">Tu peux regrouper les deux : les '+nA+(nA>1?' parties':' partie')+' de « '+esc(A.name)+' » seront déplacées dedans. '+
+    'Les parcours qui portent le même nom, le même nombre de trous et les mêmes pars sont réunis ; les autres sont conservés à part, tu pourras les fusionner ensuite.</p>'+
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">Choisir un autre nom</button><button class="btn btn-primary" id="mOk">Regrouper</button></div>');
+  $('#mCancel').onclick=()=>askRenameCourse(fromId,name);
+  $('#mOk').onclick=()=>mergeCourses(fromId,toId);
+}
+function mergeCourses(fromId,toId){
+  const db=loadDB();
+  const A=db.courses.find(x=>x.id===fromId),B=db.courses.find(x=>x.id===toId);
+  if(!A||!B){closeModal();return;}
+  if(!Array.isArray(B.layouts))B.layouts=[];
+  const map={};let apart=0;
+  (A.layouts||[]).forEach(L=>{
+    const pa=layoutPars(A,L);
+    const twin=B.layouts.find(l=>l.holes===L.holes
+      &&l.name.trim().toLowerCase()===L.name.trim().toLowerCase()
+      &&sameArr(layoutPars(B,l),pa));
+    if(twin){map[L.id]=twin.id;return;}
+    let name=L.name;
+    if(B.layouts.some(l=>l.name.trim().toLowerCase()===name.toLowerCase())){
+      let k=2;
+      while(B.layouts.some(l=>l.name.trim().toLowerCase()===(L.name+' ('+k+')').toLowerCase()))k++;
+      name=L.name+' ('+k+')';apart++;
+    }
+    const nl={id:uid('l'),name:name,holes:L.holes,pars:pa,auto:false};
+    B.layouts.push(nl);map[L.id]=nl.id;
+  });
+  (A.rounds||[]).forEach(r=>{const nr=Object.assign({},r);if(map[r.layoutId])nr.layoutId=map[r.layoutId];B.rounds.push(nr);});
+  db.courses=db.courses.filter(x=>x.id!==fromId);
+  saveDB(db);
+  if(S&&S.courseId===fromId){S.courseId=B.id;S.courseName=B.name;S.layoutId=map[S.layoutId]||S.layoutId;save();}
+  closeModal();openStats(B.id);
+  toast(apart?'Golfs regroupés · '+apart+(apart>1?' parcours gardés':' parcours gardé')+' à part':'Golfs regroupés');
+}
 $('#btnDelCourse2').onclick=()=>{
   const cid=$('#stCourse').value;if(cid==='all')return;
   const c=loadDB().courses.find(x=>x.id===cid);if(!c)return;
@@ -1342,16 +1547,137 @@ $('#btnDelCourse2').onclick=()=>{
 $('#btnRenameLayout').onclick=()=>{
   const cid=$('#stCourse').value,lid=$('#stLayout').value;if(cid==='all'||lid==='all')return;
   const c=loadDB().courses.find(x=>x.id===cid);const L=c&&(c.layouts||[]).find(l=>l.id===lid);if(!L)return;
-  openModal('<h3>Renommer le parcours</h3><input id="mName" type="text" maxlength="24" value="'+esc(L.name)+'">'+
+  askRenameLayout(cid,lid,L.name);
+};
+function askRenameLayout(cid,lid,val){
+  openModal('<h3>Renommer le parcours</h3><input id="mName" type="text" maxlength="24" value="'+esc(val)+'">'+
     '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Renommer</button></div>');
   $('#mCancel').onclick=closeModal;$('#mName').focus();$('#mName').select();
   $('#mOk').onclick=()=>{
     const v=$('#mName').value.trim();if(!v){$('#mName').focus();return;}
-    const db=loadDB();const cc=db.courses.find(x=>x.id===cid);const LL=cc&&cc.layouts.find(l=>l.id===lid);
-    if(LL){LL.name=v;LL.auto=false;}saveDB(db);
+    const db=loadDB();const cc=db.courses.find(x=>x.id===cid);const LL=cc&&(cc.layouts||[]).find(l=>l.id===lid);
+    if(!LL){closeModal();return;}
+    const twin=cc.layouts.find(l=>l.id!==lid&&l.name.trim().toLowerCase()===v.toLowerCase());
+    if(twin){askMergeLayouts(cid,lid,twin.id,v);return;}
+    LL.name=v;LL.auto=false;saveDB(db);
+    if(S&&S.layoutId===lid)S.layoutName=v,save();
     closeModal();openStats(cid,lid);toast('Parcours renommé');
   };
-};
+}
+
+/* Nom déjà utilisé : on prévient, puis on regroupe si les pars concordent,
+   sinon on laisse l'utilisateur arbitrer les pars trou par trou. */
+function askMergeLayouts(cid,fromId,toId,name){
+  const db=loadDB();
+  const c=db.courses.find(x=>x.id===cid);if(!c){closeModal();return;}
+  const A=c.layouts.find(l=>l.id===fromId),B=c.layouts.find(l=>l.id===toId);
+  if(!A||!B){closeModal();return;}
+  const nA=c.rounds.filter(r=>r.layoutId===fromId).length;
+  const nB=c.rounds.filter(r=>r.layoutId===toId).length;
+
+  if(A.holes!==B.holes){
+    openModal('<h3>Ce nom est déjà pris</h3>'+
+      '<p class="txt">« '+esc(B.name)+' » existe déjà sur '+esc(c.name)+', mais en <b>'+B.holes+' trous</b> alors que celui-ci en compte <b>'+A.holes+'</b>.</p>'+
+      '<p class="warn">Impossible de les regrouper : choisis un autre nom pour les distinguer.</p>'+
+      '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Choisir un autre nom</button></div>');
+    $('#mCancel').onclick=closeModal;
+    $('#mOk').onclick=()=>askRenameLayout(cid,fromId,name);
+    return;
+  }
+
+  const pA=layoutPars(c,A),pB=layoutPars(c,B);
+  const compte=n=>n+(n>1?' parties':' partie');
+
+  if(sameArr(pA,pB)){
+    openModal('<h3>Ce parcours existe déjà</h3>'+
+      '<p class="txt">« '+esc(B.name)+' » est déjà enregistré sur '+esc(c.name)+' en '+B.holes+' trous, <b>avec exactement les mêmes pars</b>.</p>'+
+      '<p class="txt">Les '+compte(nA)+' de ce parcours seront ajoutées aux '+compte(nB)+' de « '+esc(B.name)+' ».</p>'+
+      '<div class="row"><button class="btn btn-ghost" id="mCancel">Choisir un autre nom</button><button class="btn btn-primary" id="mOk">Regrouper</button></div>');
+    $('#mCancel').onclick=()=>askRenameLayout(cid,fromId,name);
+    $('#mOk').onclick=()=>mergeLayouts(cid,fromId,toId,null);
+    return;
+  }
+
+  const nDiff=pA.reduce((a,v,i)=>a+(v===pB[i]?0:1),0);
+  openModal('<h3>Pars différents</h3>'+
+    '<p class="txt">« '+esc(B.name)+' » existe déjà sur '+esc(c.name)+' ('+compte(nB)+'), mais <b>'+nDiff+(nDiff>1?' trous ont':' trou a')+' un par différent</b>.</p>'+
+    '<p class="txt">Vérifie les pars ci-dessous : ce sont ceux qui seront conservés pour le parcours regroupé. Les cases en rouge sont celles où les deux versions divergent.</p>'+
+    parsGridHTML(pA,pB)+
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">Choisir un autre nom</button><button class="btn btn-primary" id="mOk">Regrouper avec ces pars</button></div>');
+  $('#mCancel').onclick=()=>askRenameLayout(cid,fromId,name);
+  $('#mOk').onclick=()=>mergeLayouts(cid,fromId,toId,readPars(A.holes,pA));
+}
+function mergeLayouts(cid,fromId,toId,pars){
+  const db=loadDB();
+  const c=db.courses.find(x=>x.id===cid);if(!c){closeModal();return;}
+  const B=c.layouts.find(l=>l.id===toId);if(!B){closeModal();return;}
+  c.rounds.forEach(r=>{if(r.layoutId===fromId)r.layoutId=toId;});
+  if(pars)B.pars=pars.slice();
+  B.auto=false;
+  c.layouts=c.layouts.filter(l=>l.id!==fromId);
+  saveDB(db);
+  if(S&&S.layoutId===fromId){S.layoutId=toId;S.layoutName=B.name;save();}
+  closeModal();openStats(cid,toId);toast('Parcours regroupés');
+}
+
+/* ---------- modifier une partie déjà enregistrée ---------- */
+function openEditRound(courseId,rid){
+  const db=loadDB();
+  const c=db.courses.find(x=>x.id===courseId);if(!c)return;
+  const r=c.rounds.find(x=>(x.id||x.date)===rid);if(!r)return;
+  const H=roundHoles(c,r),L=layoutOf(c,r);
+  const p=r.players[0]||{name:profileName||'Moi',scores:[]};
+  const pars=Array.from({length:H},(_,i)=>(r.pars&&r.pars[i])||4);
+  const sc=Array.from({length:H},(_,i)=>typeof p.scores[i]==='number'?p.scores[i]:'');
+
+  openModal('<h3>Modifier la partie</h3>'+
+    '<p class="txt">'+esc(c.name)+(L?' · '+esc(L.name):'')+' · '+H+' trous.</p>'+
+    '<p class="note" style="font-size:.72rem;color:#8b8770;margin-top:8px;line-height:1.4">Pour chaque trou : le par à gauche, ton score à droite. Laisse le score vide si le trou n\'a pas été joué.</p>'+
+    '<input id="eDate" type="date" value="'+isoDay(r.date)+'">'+
+    '<div class="holegrid">'+pars.map((pv,i)=>
+      '<div class="hcell"><div class="t">Trou '+(i+1)+'</div><div class="fields">'+
+      '<input class="par" type="number" inputmode="numeric" min="1" max="10" data-epar="'+i+'" value="'+pv+'">'+
+      '<input type="number" inputmode="numeric" min="1" max="20" data-esc="'+i+'" value="'+sc[i]+'">'+
+      '</div></div>').join('')+'</div>'+
+    (L?'<label class="optline"><input type="checkbox" id="eApply"><span>Appliquer ces pars au parcours « '+esc(L.name)+' »</span></label>':'')+
+    '<button class="btn btn-ghost" id="eDel" style="margin-top:12px;color:var(--bad);border-color:#e8cfcc">Supprimer cette partie</button>'+
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Enregistrer</button></div>');
+
+  $('#mCancel').onclick=closeModal;
+  $('#eDel').onclick=()=>{closeModal();askDeleteRound(courseId,rid);};
+  $('#mOk').onclick=()=>{
+    const d2=loadDB();
+    const cc=d2.courses.find(x=>x.id===courseId);
+    const rr=cc&&cc.rounds.find(x=>(x.id||x.date)===rid);
+    if(!rr){closeModal();return;}
+    const np=[],ns=[];
+    for(let i=0;i<H;i++){
+      let pv=parseInt(document.querySelector('#overlay [data-epar="'+i+'"]').value,10);
+      if(!(pv>=1&&pv<=10))pv=pars[i];
+      np.push(pv);
+      const raw=(document.querySelector('#overlay [data-esc="'+i+'"]').value||'').trim();
+      let sv=raw===''?null:parseInt(raw,10);
+      if(sv!==null&&!(sv>=1&&sv<=20))sv=null;
+      ns.push(sv);
+    }
+    rr.pars=np;rr.holes=H;
+    if(!rr.players.length)rr.players.push({name:profileName||'Moi',scores:[]});
+    rr.players[0].scores=ns;
+    const dv=$('#eDate').value;
+    if(dv){
+      const old=new Date(rr.date);
+      const nd=new Date(dv+'T'+(isNaN(old)?'12:00':pad2(old.getHours())+':'+pad2(old.getMinutes()))+':00');
+      if(!isNaN(nd))rr.date=nd.toISOString();
+    }
+    const ap=$('#eApply');
+    if(ap&&ap.checked){
+      const LL=(cc.layouts||[]).find(l=>l.id===rr.layoutId);
+      if(LL&&LL.holes===H)LL.pars=np.slice();
+    }
+    saveDB(d2);closeModal();
+    openStats(courseId,rr.layoutId);toast('Partie modifiée');
+  };
+}
 $('#btnDelLayout').onclick=()=>{
   const cid=$('#stCourse').value,lid=$('#stLayout').value;if(cid==='all'||lid==='all')return;
   const c=loadDB().courses.find(x=>x.id===cid);const L=c&&(c.layouts||[]).find(l=>l.id===lid);if(!L)return;
@@ -1537,11 +1863,13 @@ function showAuth(){
   $('#auth').classList.remove('hidden');
   document.body.classList.remove('lock');window.scrollTo(0,0);
   if(configMissing){authError("Configuration Firebase à compléter dans le fichier avant de pouvoir se connecter.");$('#btnAuth').classList.add('loading');}
+  hideBoot();
 }
 function enterApp(){
   $('#auth').classList.add('hidden');
   updateAccountBtn();renderNames();refreshResume();
   guard=false;show('setup');
+  hideBoot();
 }
 
 const authMsg=code=>({
