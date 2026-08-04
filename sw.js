@@ -3,7 +3,7 @@
    Incrémente CACHE_VERSION à chaque mise en ligne
    pour forcer le rafraîchissement chez les utilisateurs.
    ========================================================= */
-const CACHE_VERSION = 'swinguppro-v2';
+const CACHE_VERSION = 'swinguppro-v3';
 
 /* Fichiers de l'application, mis en cache à l'installation */
 const APP_SHELL = [
@@ -51,6 +51,10 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
+
+  /* Extensions du navigateur (chrome-extension://) et autres schémas :
+     le cache refuse de les stocker, on les laisse passer intactes. */
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
   /* Firebase / Firestore : toujours le réseau, jamais de cache.
      Sinon les données de compte seraient servies périmées. */
