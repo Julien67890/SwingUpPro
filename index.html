@@ -267,8 +267,12 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .minibtn svg{width:19px;height:19px}
 .minibtn.danger{color:var(--bad)}
 .minibtn:disabled{opacity:.32;pointer-events:none}
-.hstrip{display:flex;gap:10px;overflow-x:auto;padding:2px 18px 6px;scrollbar-width:none}
-.hstrip::-webkit-scrollbar{display:none}
+.hstrip{display:flex;gap:10px;overflow-x:auto;padding:2px 18px 10px;scrollbar-width:thin;scrollbar-color:#cdc7b1 transparent;overscroll-behavior-x:contain}
+.hstrip::-webkit-scrollbar{height:6px}
+.hstrip::-webkit-scrollbar-thumb{background:#cdc7b1;border-radius:99px}
+.hstrip::-webkit-scrollbar-track{background:transparent}
+.hstrip.drag{cursor:grabbing;scroll-behavior:auto}
+.hstrip.drag .rcard{pointer-events:none}
 .rcard{position:relative;flex:0 0 130px;height:130px;background:#fff;border:1.5px solid #e6e0cd;border-radius:6px;padding:12px;display:flex;flex-direction:column}
 .rcard .del{position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:6px;border:none;background:transparent;color:#cdc7b1;display:grid;place-items:center;cursor:pointer;padding:0}
 .rcard .del:active{background:var(--bad-bg);color:var(--bad)}
@@ -330,6 +334,23 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .acctbtn .av{width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:linear-gradient(145deg,#52b788,#1b4332);font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:.9rem;color:#fff}
 .nrow.you{border-color:var(--green-mid);background:#f1f9f4}
 .btn-share{background:#fff;color:var(--green-mid);border:1.5px solid var(--green-mid)}
+
+/* Évolution : 10 parties visibles (+ en-tête, Par et Moyenne), puis défilement */
+#stEvo .tscroll{overflow-y:auto;max-height:429px;scrollbar-width:thin;scrollbar-color:#cdc7b1 transparent}
+#stEvo .tscroll::-webkit-scrollbar{width:6px;height:6px}
+#stEvo .tscroll::-webkit-scrollbar-thumb{background:#cdc7b1;border-radius:99px}
+#stEvo table.score thead th{position:sticky;top:0;z-index:3}
+#stEvo table.score thead th.hcol,#stEvo table.score thead th.totcol{z-index:5}
+
+/* ---------- connexion Google ---------- */
+.authsep{display:flex;align-items:center;gap:12px;margin:15px 0 13px;color:#a8a390;font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.authsep::before,.authsep::after{content:'';flex:1;height:1px;background:#e0dac6}
+.btn-google{background:#fff;color:#3c4043;border:1.5px solid #dadce0;font-weight:600}
+.btn-google svg{width:19px;height:19px}
+.btn-google:active{background:#f4f4f4}
+.accbtns{display:grid;gap:8px;margin-top:14px}
+.accbtns .btn{width:100%}
+.hintsm{font-size:.74rem;color:#8b8770;line-height:1.4;margin-top:10px}
 
 /* ---------- premium : apercu gratuit ---------- */
 #stEvoWrap{position:relative}
@@ -469,6 +490,12 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
         <input type="password" id="auPass" placeholder="Au moins 6 caractères" autocomplete="current-password">
       </div>
       <button class="btn btn-primary" id="btnAuth">Se connecter</button>
+      <div class="authsep"><span>ou</span></div>
+      <button class="btn btn-google" id="btnGoogle">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-2.8-.4-4H24v7.3h12.1c-.2 2-1.6 5-4.5 7l-.1.3 6.5 5 .5.1c4.1-3.8 6.6-9.4 6.6-15.7"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-6.9-5.4c-1.8 1.3-4.3 2.2-7.6 2.2-5.8 0-10.7-3.8-12.5-9.1l-.3
+ 0-6.7 5.2-.1.2C8 40.4 15.4 46 24 46"/><path fill="#FBBC05" d="M11.5 28.4c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4v-.3l-6.8-5.3-.2.1C2.9 17 2 20.4 2 24s.9 7 2.5 10.1z"/><path fill="#EA4335" d="M24 9.5c4.1 0 6.9 1.8 8.5 3.3l6.2-6C34.9 3.4 29.9 1 24 1 15.4 1 8 6.6 4.5 13.9l7 5.4c1.8-5.3 6.7-9.8 12.5-9.8"/></svg>
+        Continuer avec Google
+      </button>
       <button class="authlink" id="btnReset">Mot de passe oublié ?</button>
     </div>
     <p class="footnote">Tes parties sont enregistrées sur ton compte<br>et te suivent sur tous tes appareils.</p>
@@ -1969,6 +1996,34 @@ function refreshPremiumUI(){
   }
 }
 
+/* Le bandeau des parties défile horizontalement : à la molette sur ordinateur
+   (où il n'y a pas de geste latéral) et au cliquer-glisser. */
+(function(){
+  const st=$('#stRounds');if(!st)return;
+  st.addEventListener('wheel',e=>{
+    if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;
+    const max=st.scrollWidth-st.clientWidth;
+    if(max<=0)return;
+    const next=st.scrollLeft+e.deltaY;
+    if(next<0||next>max)return;          /* on rend la main à la page aux extrémités */
+    e.preventDefault();st.scrollLeft=next;
+  },{passive:false});
+  let down=false,x0=0,l0=0,moved=0;
+  st.addEventListener('pointerdown',e=>{
+    if(e.pointerType!=='mouse')return;
+    down=true;moved=0;x0=e.clientX;l0=st.scrollLeft;st.setPointerCapture(e.pointerId);
+  });
+  st.addEventListener('pointermove',e=>{
+    if(!down)return;
+    const d=e.clientX-x0;
+    if(Math.abs(d)>4){moved=1;st.classList.add('drag');}
+    st.scrollLeft=l0-d;
+  });
+  const end=()=>{down=false;setTimeout(()=>st.classList.remove('drag'),0);};
+  st.addEventListener('pointerup',end);st.addEventListener('pointercancel',end);
+  st.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=0;}},true);
+})();
+
 function openPaywall(origin){
   const feats=[
     ['Évolution trou par trou','Le tableau complet, partie après partie, avec les moyennes par trou.'],
@@ -2107,11 +2162,17 @@ const authMsg=code=>({
   'auth/user-not-found':"Aucun compte avec cet e-mail.",
   'auth/wrong-password':"Mot de passe incorrect.",
   'auth/invalid-credential':"E-mail ou mot de passe incorrect.",
-  'auth/email-already-in-use':"Un compte existe déjà avec cet e-mail.",
+  'auth/email-already-in-use':"Un compte existe déjà avec cet e-mail. Connecte-toi, ou utilise « Continuer avec Google ».",
   'auth/weak-password':"Mot de passe trop court (6 caractères minimum).",
   'auth/too-many-requests':"Trop de tentatives, réessaie plus tard.",
   'auth/network-request-failed':"Pas de connexion. Vérifie ton réseau.",
-  'auth/operation-not-allowed':"Connexion e-mail non activée dans Firebase."
+  'auth/operation-not-allowed':"Ce mode de connexion n'est pas activé dans Firebase.",
+  'auth/popup-blocked':"La fenêtre Google a été bloquée par le navigateur.",
+  'auth/unauthorized-domain':"Ce domaine n'est pas autorisé dans Firebase.",
+  'auth/account-exists-with-different-credential':"Un compte existe déjà avec cet e-mail, via un autre mode de connexion.",
+  'auth/requires-recent-login':"Par sécurité, reconnecte-toi avant de modifier ton compte.",
+  'auth/missing-password':"Indique ton mot de passe actuel.",
+  'auth/invalid-new-email':"La nouvelle adresse e-mail est invalide."
 }[code]||"Une erreur est survenue. Réessaie.");
 
 $('#btnAuth').onclick=async()=>{
@@ -2133,6 +2194,60 @@ $('#btnAuth').onclick=async()=>{
   }catch(e){pendingName=null;authError(authMsg(e.code));btn.classList.remove('loading');setAuthMode(authMode);}
 };
 
+$('#btnGoogle').onclick=async()=>{
+  if(configMissing)return;
+  authError('');
+  const btn=$('#btnGoogle');btn.classList.add('loading');
+  const prov=new firebase.auth.GoogleAuthProvider();
+  prov.setCustomParameters({prompt:'select_account'});
+  try{
+    await auth.signInWithPopup(prov);
+  }catch(e){
+    btn.classList.remove('loading');
+    /* Fenêtre fermée volontairement : on ne dit rien. */
+    if(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request')return;
+    /* Un compte e-mail existe déjà avec cette adresse : on propose de fusionner. */
+    if(e.code==='auth/account-exists-with-different-credential'){linkGoogleToExisting(e);return;}
+    /* Fenêtre impossible (app installée, navigateur strict) : on bascule
+       sur la redirection, qui revient sur la page une fois connecté. */
+    if(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'){
+      try{await auth.signInWithRedirect(prov);return;}
+      catch(e2){authError(authMsg(e2.code));}
+    }else authError(authMsg(e.code));
+  }
+};
+
+/* Fusion des deux modes de connexion pour une même adresse.
+   L'utilisateur s'identifie avec son mot de passe, puis on rattache
+   la référence Google au compte : même identifiant, mêmes parties. */
+function linkGoogleToExisting(err){
+  const email=err.email||(err.customData&&err.customData.email)||'';
+  const pending=err.credential;
+  if(!pending){authError(authMsg(err.code));return;}
+  openModal('<h3>Ce compte existe déjà</h3>'+
+    '<p class="txt">Un compte est déjà enregistré avec <b>'+esc(email)+'</b> et un mot de passe.</p>'+
+    '<p class="txt">Saisis-le une dernière fois : on associe Google à ce compte, et tu pourras ensuite utiliser l\'un ou l\'autre. Tes parties sont conservées.</p>'+
+    '<input id="lgPass" type="password" autocomplete="current-password" placeholder="Ton mot de passe">'+
+    '<div class="autherr hidden" id="lgErr" style="margin-top:12px"></div>'+
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Associer</button></div>');
+  $('#mCancel').onclick=closeModal;
+  const shout=m=>{const e=$('#lgErr');e.textContent=m;e.classList.remove('hidden');};
+  $('#mOk').onclick=async()=>{
+    const pass=$('#lgPass').value;
+    if(!pass){shout("Indique ton mot de passe.");return;}
+    const b=$('#mOk');b.classList.add('loading');b.textContent='Un instant…';
+    try{
+      const res=await auth.signInWithEmailAndPassword(email,pass);
+      try{await res.user.linkWithCredential(pending);}
+      catch(e2){if(e2.code!=='auth/provider-already-linked')throw e2;}
+      closeModal();toast('Google associé à ton compte');
+    }catch(e){
+      b.classList.remove('loading');b.textContent='Associer';
+      shout(authMsg(e.code));
+    }
+  };
+}
+
 $('#btnReset').onclick=async()=>{
   if(configMissing)return;
   const email=$('#auEmail').value.trim();
@@ -2140,6 +2255,87 @@ $('#btnReset').onclick=async()=>{
   try{await auth.sendPasswordResetEmail(email);authError('');toast('E-mail de réinitialisation envoyé');}
   catch(e){authError(authMsg(e.code));}
 };
+
+/* ---------- modification des identifiants ----------
+   Firebase exige une connexion récente pour ces opérations : on redemande
+   donc le mot de passe actuel avant chaque changement.               */
+function hasPasswordProvider(){
+  return !!(currentUser&&(currentUser.providerData||[]).some(p=>p.providerId==='password'));
+}
+async function reauth(pass){
+  const cred=firebase.auth.EmailAuthProvider.credential(currentUser.email,pass);
+  await currentUser.reauthenticateWithCredential(cred);
+}
+function openChangeEmail(){
+  if(!currentUser)return;
+  openModal('<h3>Changer d\'adresse e-mail</h3>'+
+    '<p class="txt">Adresse actuelle : <b>'+esc(currentUser.email)+'</b></p>'+
+    '<label class="flabel" style="margin:16px 0 0">Mot de passe actuel</label>'+
+    '<input id="cePass" type="password" autocomplete="current-password" placeholder="Pour confirmer que c\'est bien toi">'+
+    '<label class="flabel" style="margin:14px 0 0">Nouvelle adresse</label>'+
+    '<input id="ceMail" type="email" inputmode="email" autocomplete="email" placeholder="nouvelle@exemple.fr">'+
+    '<div class="autherr hidden" id="ceErr" style="margin-top:12px"></div>'+
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Continuer</button></div>');
+  $('#mCancel').onclick=closeModal;
+  const err=m=>{const e=$('#ceErr');e.textContent=m;e.classList.remove('hidden');};
+  $('#mOk').onclick=async()=>{
+    const pass=$('#cePass').value, mail=$('#ceMail').value.trim();
+    if(!pass){err("Indique ton mot de passe actuel.");return;}
+    if(!mail||mail.indexOf('@')<0){err("Nouvelle adresse invalide.");return;}
+    if(mail.toLowerCase()===(currentUser.email||'').toLowerCase()){err("C'est déjà ton adresse actuelle.");return;}
+    const b=$('#mOk');b.classList.add('loading');b.textContent='Un instant…';
+    try{
+      await reauth(pass);
+      /* verifyBeforeUpdateEmail : le changement n'est effectif qu'après clic
+         sur le lien envoyé à la nouvelle adresse. C'est la méthode conseillée. */
+      if(typeof currentUser.verifyBeforeUpdateEmail==='function'){
+        await currentUser.verifyBeforeUpdateEmail(mail);
+        closeModal();
+        openModal('<h3>Vérifie ta nouvelle adresse</h3>'+
+          '<p class="txt">Un e-mail vient d\'être envoyé à <b>'+esc(mail)+'</b>. Clique sur le lien qu\'il contient pour valider le changement.</p>'+
+          '<p class="txt">Tant que ce n\'est pas fait, continue à te connecter avec ton ancienne adresse.</p>'+
+          '<div class="row"><button class="btn btn-primary" id="mOk2">Compris</button></div>');
+        $('#mOk2').onclick=closeModal;
+      }else{
+        await currentUser.updateEmail(mail);
+        closeModal();toast('Adresse e-mail mise à jour');
+      }
+    }catch(e){
+      b.classList.remove('loading');b.textContent='Continuer';
+      err(authMsg(e.code));
+    }
+  };
+}
+function openChangePass(){
+  if(!currentUser)return;
+  openModal('<h3>Changer de mot de passe</h3>'+
+    '<label class="flabel" style="margin:6px 0 0">Mot de passe actuel</label>'+
+    '<input id="cpOld" type="password" autocomplete="current-password">'+
+    '<label class="flabel" style="margin:14px 0 0">Nouveau mot de passe</label>'+
+    '<input id="cpNew" type="password" autocomplete="new-password" placeholder="Au moins 6 caractères">'+
+    '<label class="flabel" style="margin:14px 0 0">Confirme le nouveau</label>'+
+    '<input id="cpNew2" type="password" autocomplete="new-password">'+
+    '<div class="autherr hidden" id="cpErr" style="margin-top:12px"></div>'+
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Enregistrer</button></div>');
+  $('#mCancel').onclick=closeModal;
+  const err=m=>{const e=$('#cpErr');e.textContent=m;e.classList.remove('hidden');};
+  $('#mOk').onclick=async()=>{
+    const old=$('#cpOld').value,n1=$('#cpNew').value,n2=$('#cpNew2').value;
+    if(!old){err("Indique ton mot de passe actuel.");return;}
+    if(n1.length<6){err("Nouveau mot de passe : 6 caractères minimum.");return;}
+    if(n1!==n2){err("Les deux nouveaux mots de passe ne correspondent pas.");return;}
+    if(n1===old){err("Le nouveau mot de passe est identique à l'ancien.");return;}
+    const b=$('#mOk');b.classList.add('loading');b.textContent='Un instant…';
+    try{
+      await reauth(old);
+      await currentUser.updatePassword(n1);
+      closeModal();toast('Mot de passe mis à jour');
+    }catch(e){
+      b.classList.remove('loading');b.textContent='Enregistrer';
+      err(authMsg(e.code));
+    }
+  };
+}
 
 $('#btnAccount').onclick=()=>{
   const ok=isPremium();
@@ -2149,13 +2345,23 @@ $('#btnAccount').onclick=()=>{
       +(PREMIUM.portalUrl?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">Gérer mon abonnement</button>':'')
     : '<div class="subline"><b>Offre gratuite</b><span>Statistiques et partage verrouillés</span></div>'
       +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">Découvrir Premium</button>';
+  const byPass=hasPasswordProvider();
   openModal('<h3>Mon compte</h3>'+
-    '<p class="txt">Connecté·e en tant que <b>'+esc(currentUser?currentUser.email:'')+'</b>.</p>'+
+    '<p class="txt">Connecté·e en tant que <b>'+esc(currentUser?currentUser.email:'')+'</b>'+
+      (byPass?'':' <span class="propill">Google</span>')+'.</p>'+
     abo+
     '<input id="mName" type="text" maxlength="14" value="'+esc(profileName)+'" placeholder="Ton nom (joueur 1)">'+
+    '<div class="accbtns">'+
+      (byPass
+        ? '<button class="btn btn-ghost" id="mEmail">Changer d\'adresse e-mail</button>'+
+          '<button class="btn btn-ghost" id="mPass">Changer de mot de passe</button>'
+        : '<p class="hintsm">Ton compte utilise la connexion Google : l\'adresse e-mail et le mot de passe se gèrent depuis ton compte Google.</p>')+
+    '</div>'+
     '<div class="row"><button class="btn btn-ghost" id="mLogout">Se déconnecter</button><button class="btn btn-primary" id="mOk">Enregistrer</button></div>');
   const up=$('#mUp');if(up)up.onclick=()=>{closeModal();openPaywall('compte');};
   const po=$('#mPortal');if(po)po.onclick=openPortal;
+  const me=$('#mEmail');if(me)me.onclick=openChangeEmail;
+  const mp=$('#mPass');if(mp)mp.onclick=openChangePass;
   $('#mOk').onclick=async()=>{
     const v=$('#mName').value.trim();
     if(v&&v!==profileName){
@@ -2170,6 +2376,13 @@ $('#btnAccount').onclick=()=>{
 
 setAuthMode('login');
 if(fbReady){
+  /* Retour de la connexion Google par redirection : on ne récupère ici que
+     l'éventuelle erreur, la session est prise en charge par onAuthStateChanged. */
+  auth.getRedirectResult().catch(e=>{
+    if(!e||!e.code)return;
+    if(e.code==='auth/account-exists-with-different-credential'){linkGoogleToExisting(e);return;}
+    authError(authMsg(e.code));
+  });
   auth.onAuthStateChanged(async user=>{
     currentUser=user;
     if(user){
