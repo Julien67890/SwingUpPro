@@ -196,6 +196,17 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .quick button.on{border-color:var(--green-mid);background:#f1f9f4}
 .quick button b{display:block;font-family:'Fraunces',Georgia,serif;font-size:1.05rem;color:var(--green-deep)}
 .quick button span{font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;color:#8b8770;font-weight:600}
+.ptabs{display:flex;gap:6px;padding:10px 16px 4px}
+.ptabs.hidden{display:none}
+.ptab{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #e6e0cd;border-radius:6px;padding:7px 8px;cursor:pointer;font-family:'Outfit',sans-serif;transition:border-color .18s,background .18s}
+.ptab i{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.ptab span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.78rem;font-weight:500;color:#5a5848;text-align:left}
+.ptab b{flex:0 0 auto;font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:1rem;color:var(--green-deep)}
+.ptab.todo b{color:#c3bda7}
+.ptab.on{border-color:var(--green-mid);background:#f1f9f4;box-shadow:inset 0 0 0 1px var(--green-mid)}
+.ptab.on span{color:var(--green-deep);font-weight:600}
+@media(max-width:360px){.ptab{padding:6px 6px;gap:4px}.ptab span{font-size:.72rem}}
+
 .dots{display:flex;justify-content:center;gap:7px;padding:9px 0 3px}
 .dots i{width:7px;height:7px;border-radius:50%;background:#d5cfb9;transition:all .25s;cursor:pointer}
 .dots i.on{width:22px;border-radius:6px;background:var(--green-mid)}
@@ -585,7 +596,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
     </div>
 
     <div class="carousel" id="carousel"><div class="track" id="track"></div></div>
-    <div class="dots" id="dots"></div>
+    <div class="ptabs" id="ptabs"></div>
 
     <div class="holenav">
       <button id="btnPrev"><svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Trou précédent</button>
@@ -736,6 +747,14 @@ const PREMIUM={
   test:null
 };
 /* ▲▲▲  Rien d'autre à modifier en dessous.  ▲▲▲ */
+
+/* Lien affiché sur l'image de partage et joint au message.
+   Renseigne l'URL du Play Store quand la fiche sera publiée ;
+   tant qu'elle est vide, seul le nom de l'app apparaît. */
+const SHARE_LINK={
+  url:'',                       /* ex. 'play.google.com/store/apps/details?id=…' */
+  label:'Carte tenue avec SwingUpPro'
+};
 const FREE_ROUNDS=Math.max(1,PREMIUM.freeRounds||3);
 
 let auth=null, fs=null, fbReady=false;
@@ -782,7 +801,10 @@ function repair(g){
 function load(){try{const r=Store.get(gameKey());return r?repair(JSON.parse(r)):null}catch(e){return null}}
 
 /* ---------- base des golfs enregistrés ---------- */
-const DBKEY='golf-parcours-v1',MAXC=100,MAXP=6,MAXDB=10;
+const DBKEY='golf-parcours-v1',MAXC=100,MAXP=4,MAXDB=10;
+/* Tolérance : une partie commencée avant la limite à 4 reste enregistrable
+   en entier, on ne perd jamais de scores déjà saisis. */
+const HARDMAXP=6;
 const uid=p=>p+Math.random().toString(36).slice(2,9);
 function roundHoles(c,r){return r.holes||(Array.isArray(r.pars)?r.pars.length:c.holes);}
 function loadDB(){
@@ -1174,10 +1196,25 @@ function advance(){
   },260);
 }
 
+/* Avec 4 joueurs au maximum, on remplace les pastilles anonymes par des
+   onglets nommés qui affichent le score du trou en cours : on voit d'un
+   coup d'œil qui a joué et qui reste à saisir. */
 function renderDots(){
-  const d=$('#dots');d.innerHTML='';
-  S.players.forEach((p,i)=>{const el=document.createElement('i');if(i===S.active)el.classList.add('on');el.onclick=()=>setActive(i);d.appendChild(el);});
+  const d=$('#ptabs');d.innerHTML='';
   d.classList.toggle('hidden',S.players.length<2);
+  if(S.players.length<2)return;
+  S.players.forEach((p,i)=>{
+    const s=p.scores[S.cur];
+    const b=document.createElement('button');
+    b.className='ptab'+(i===S.active?' on':'')+(s===null?' todo':'');
+    b.type='button';
+    b.setAttribute('aria-current',i===S.active?'true':'false');
+    b.innerHTML='<i style="background:'+COLORS[i%COLORS.length]+'"></i>'+
+      '<span>'+esc(p.name||('J'+(i+1)))+'</span>'+
+      '<b>'+(s===null?'–':s)+'</b>';
+    b.onclick=()=>setActive(i);
+    d.appendChild(b);
+  });
 }
 function scrollToHole(){
   const sc=$('#tscroll'),cell=34,first=94;
@@ -1338,7 +1375,7 @@ function storeRound(courseId,newName,list){
     holes:S.holes,
     layoutId:L.id,
     pars:S.pars.slice(),
-    players:(list&&list.length?list:S.players.map(p=>({name:p.name,scores:p.scores.slice()}))).slice(0,MAXP)
+    players:(list&&list.length?list:S.players.map(p=>({name:p.name,scores:p.scores.slice()}))).slice(0,HARDMAXP)
   });
   saveDB(db);
   S.savedTo=c.id;S.courseId=c.id;S.courseName=c.name;S.layoutId=L.id;S.layoutName=L.name;save();
@@ -1870,7 +1907,7 @@ async function recapBlob(){
   const NH=S.holes, players=S.players;
   const PAD=36, NAMEW=176, TOTW=120;
   const cellW=NH>18?46:(NH>12?54:64);
-  const rowH=56, headH=170, footH=72;
+  const rowH=56, headH=170, footH=104;
   const tableW=NAMEW+NH*cellW+TOTW;
   const W=PAD*2+tableW;
   const rows=2+players.length;
@@ -1959,9 +1996,17 @@ async function recapBlob(){
     ctx.fillText(lbl,totX+TOTW/2,my);
   });
 
+  /* Signature : c'est ce bloc qui fait connaître l'app quand la carte circule. */
   ctx.textAlign='center';ctx.textBaseline='alphabetic';
-  ctx.font='500 13px '+O;ctx.fillStyle='#b7b29c';
-  ctx.fillText('Généré par SwingUpPro',W/2,HT-30);
+  const sigY=HT-footH+40;
+  ctx.font='900 20px '+F;
+  const nm='SwingUpPro', nw=ctx.measureText(nm).width, fs=22, fg=12;
+  const fx=(W-(fs+fg+nw))/2;
+  drawFlag(ctx,fx,sigY-18,fs);
+  ctx.textAlign='left';ctx.fillStyle='#2d6a4f';
+  ctx.fillText(nm,fx+fs+fg,sigY);
+  ctx.textAlign='center';ctx.font='500 14px '+O;ctx.fillStyle='#8b8770';
+  ctx.fillText(SHARE_LINK.url?SHARE_LINK.url:SHARE_LINK.label,W/2,sigY+26);
 
   return await new Promise(res=>cvs.toBlob(res,'image/png',0.95));
 }
@@ -1973,8 +2018,9 @@ async function shareRecap(){
     if(!blob){toast('Image indisponible');return;}
     const file=new File([blob],'carte-golf.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
+      const promo=SHARE_LINK.url?'\n\n'+SHARE_LINK.label+' : '+SHARE_LINK.url:'\n\n'+SHARE_LINK.label;
       await navigator.share({files:[file],title:'SwingUpPro',
-        text:(S.courseName?S.courseName+' — ':'')+'ma carte de score au golf'});
+        text:(S.courseName?S.courseName+' — ':'')+'ma carte de score au golf'+promo});
     }else{
       const url=URL.createObjectURL(blob);
       const a=document.createElement('a');a.href=url;a.download='carte-golf.png';document.body.appendChild(a);a.click();a.remove();
@@ -1984,15 +2030,15 @@ async function shareRecap(){
   }catch(e){ if(!e||e.name!=='AbortError')toast("Partage impossible"); }
   finally{ btn.classList.remove('loading'); }
 }
-$('#btnShare').onclick=()=>{if(isPremium())shareRecap();else openPaywall('share');};
+$('#btnShare').onclick=shareRecap;
 
 /* ---------- paywall ---------- */
+/* Le partage est gratuit : le bouton reste toujours en état normal. */
 function refreshPremiumUI(){
-  const ok=isPremium();
   const b=$('#btnShare');
-  if(b){
-    b.classList.toggle('locked',!ok);
-    b.innerHTML=(ok?ICON_SHARE:ICON_LOCK)+'Partager le récapitulatif'+(ok?'':'<span class="propill">Premium</span>');
+  if(b&&b.classList.contains('locked')){
+    b.classList.remove('locked');
+    b.innerHTML=ICON_SHARE+'Partager le récapitulatif';
   }
 }
 
@@ -2028,11 +2074,9 @@ function openPaywall(origin){
   const feats=[
     ['Évolution trou par trou','Le tableau complet, partie après partie, avec les moyennes par trou.'],
     ['Trous à travailler','L\'analyse de ta forme du moment et des trous qui te coûtent des coups.'],
-    ['Historique complet','Toutes tes parties, pas seulement les '+FREE_ROUNDS+' dernières.'],
-    ['Partage du récapitulatif','L\'image de ta carte de score, prête à envoyer.']
+    ['Historique complet','Toutes tes parties, pas seulement les '+FREE_ROUNDS+' dernières.']
   ];
   const intro={
-    share:'Le partage du récapitulatif fait partie de l\'offre Premium.',
     historique:'L\'historique complet fait partie de l\'offre Premium.',
     stats:'Le détail trou par trou fait partie de l\'offre Premium.'
   }[origin]||'Voici ce que débloque l\'offre Premium.';
@@ -2159,9 +2203,9 @@ function enterApp(){
 
 const authMsg=code=>({
   'auth/invalid-email':"Adresse e-mail invalide.",
-  'auth/user-not-found':"Aucun compte avec cet e-mail.",
+  'auth/user-not-found':"Aucun compte avec cet e-mail. Si tu es passé·e par Google, utilise « Continuer avec Google ».",
   'auth/wrong-password':"Mot de passe incorrect.",
-  'auth/invalid-credential':"E-mail ou mot de passe incorrect.",
+  'auth/invalid-credential':"E-mail ou mot de passe incorrect. Si ton compte a été créé avec Google, connecte-toi via « Continuer avec Google ».",
   'auth/email-already-in-use':"Un compte existe déjà avec cet e-mail. Connecte-toi, ou utilise « Continuer avec Google ».",
   'auth/weak-password':"Mot de passe trop court (6 caractères minimum).",
   'auth/too-many-requests':"Trop de tentatives, réessaie plus tard.",
@@ -2191,7 +2235,14 @@ $('#btnAuth').onclick=async()=>{
     }else{
       await auth.signInWithEmailAndPassword(email,pass);
     }
-  }catch(e){pendingName=null;authError(authMsg(e.code));btn.classList.remove('loading');setAuthMode(authMode);}
+  }catch(e){
+    pendingName=null;
+    /* On remet le bouton en état SANS repasser par setAuthMode(),
+       qui efface le message d'erreur qu'on vient d'afficher. */
+    btn.classList.remove('loading');
+    btn.textContent=authMode==='signup'?'Créer mon compte':'Se connecter';
+    authError(authMsg(e.code));
+  }
 };
 
 $('#btnGoogle').onclick=async()=>{
