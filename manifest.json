@@ -1,6 +1,6 @@
 {
-  "name": "SwingUpPro - Carte de score de golf",
-  "short_name": "SwingUpPro",
+  "name": "SwingUp - Carte de score de golf",
+  "short_name": "SwingUp",
   "description": "Application de carte de score de golf : saisie des scores trou par trou, calcul du handicap, suivi des parties et statistiques. Fonctionne hors ligne.",
   "id": "/SwingUpPro/",
   "start_url": "./",
