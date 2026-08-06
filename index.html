@@ -363,6 +363,18 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .accbtns .btn{width:100%}
 .hintsm{font-size:.74rem;color:#8b8770;line-height:1.4;margin-top:10px}
 
+/* ---------- badge beta ---------- */
+.betapill{flex:0 0 auto;align-self:center;margin-left:2px;font-size:.58rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--green-deep);background:var(--green-glow);
+  padding:3px 8px;border-radius:999px}
+.betapill.hidden{display:none}
+
+/* ---------- lien vers la politique de confidentialite ---------- */
+.privlink{color:rgba(116,198,157,.85);text-decoration:underline;text-underline-offset:3px}
+.modpriv{text-align:center;margin-top:14px;font-size:.76rem}
+.modpriv a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.modpriv a:hover{color:var(--green-mid)}
+
 /* ---------- bandeau de consentement ---------- */
 .consent{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:95;
   background:var(--cream);border:1.5px solid #ddd6c0;border-radius:6px;box-shadow:0 18px 40px -14px rgba(19,54,31,.45);
@@ -519,7 +531,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
       </button>
       <button class="authlink" id="btnReset">Mot de passe oublié ?</button>
     </div>
-    <p class="footnote">Tes parties sont enregistrées sur ton compte<br>et te suivent sur tous tes appareils.</p>
+    <p class="footnote">Tes parties sont enregistrées sur ton compte<br>et te suivent sur tous tes appareils.</p><p class="footnote"><a class="privlink" href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>
   </div>
 </section>
 
@@ -527,7 +539,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 <section id="setup" class="hidden">
   <header>
     <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V3l11 4-11 4" stroke="#f6f3e9" stroke-width="2" stroke-linejoin="round"/><circle cx="6" cy="21" r="1.6" fill="#f6f3e9"/><circle cx="14" cy="19" r="2.6" fill="#d62828"/></svg></div>
-    <div class="brand"><h1>Carte de score</h1><p>Parcours en cours</p></div>
+    <div class="brand"><h1>Carte de score</h1><p id="brandSub">Parcours en cours</p></div><span class="betapill hidden" id="betaPill">Bêta</span>
     <button class="acctbtn" id="btnAccount" aria-label="Mon compte"><span class="who" id="acctName">—</span><span class="av" id="acctAv">?</span></button>
   </header>
 
@@ -751,11 +763,25 @@ const PREMIUM={
   freeRounds:3,
   /* URL des Cloud Functions. Tant qu'elles valent null, le bouton
      annonce simplement que le paiement arrive bientôt. */
-  checkoutUrl:null,  /* ex. https://europe-west1-swingup-92a94.cloudfunctions.net/createCheckoutSession */
-  portalUrl:null,    /* ex. https://europe-west1-swingup-92a94.cloudfunctions.net/createPortalLink   */
-  /* Pour tester les deux états sans toucher à Firestore : true ou false.
-     REMETTRE À null AVANT LA MISE EN LIGNE. */
+  checkoutUrl:'https://europe-west1-swingup-92a94.cloudfunctions.net/createCheckoutSession',
+  portalUrl:'https://europe-west1-swingup-92a94.cloudfunctions.net/createPortalLink',
+  /* Forçage manuel, pour vérifier l'app dans un état donné :
+       null  = comportement normal (bêta, puis abonnement réel)
+       true  = tout ouvert   /   false = tout verrouillé
+     À laisser sur null en dehors des tests. */
   test:null
+};
+
+/* Phase bêta.
+   actif:true  → l'app est entièrement ouverte, rien n'est vendu.
+   Le jour de la bascule, passer actif à false : les comptes créés
+   avant « limite » gardent leur accès à vie, les nouveaux passent
+   par l'abonnement. Les deux dates sont volontairement séparées :
+   on peut prolonger l'affichage sans reclasser des comptes. */
+const BETA={
+  actif:true,
+  fin:'31 mars 2027',                          /* texte affiché */
+  limite:Date.parse('2027-03-31T23:59:59+02:00') /* antériorité des comptes */
 };
 /* ▲▲▲  Rien d'autre à modifier en dessous.  ▲▲▲ */
 
@@ -764,7 +790,7 @@ const PREMIUM={
    n'apparaît. Renseigne l'identifiant G-XXXXXXXXXX pour activer. */
 const ANALYTICS={
   id:'',                        /* ex. 'G-AB12CD34EF' */
-  policyUrl:''                  /* lien vers ta politique de confidentialité */
+  policyUrl:'confidentialite.html'   /* page livrée avec l'app */
 };
 
 /* Lien affiché sur l'image de partage et joint au message.
@@ -881,8 +907,10 @@ async function pullDB(){
       const data=snap.data()||{};
       if(data.db&&Array.isArray(data.db.courses))dbCache=data.db;
       if(data.name)profileName=data.name;
+      accountCreated=typeof data.created==='number'?data.created:0; /* 0 = compte ancien, sans date */
     }else{
-      await fs.collection('users').doc(currentUser.uid).set({name:profileName,db:{courses:[]},created:Date.now()},{merge:true});
+      accountCreated=Date.now();
+      await fs.collection('users').doc(currentUser.uid).set({name:profileName,db:{courses:[]},created:accountCreated},{merge:true});
       dbCache={courses:[]};
     }
     try{Store.set(dbLocalKey(),JSON.stringify(dbCache));}catch(e){}
@@ -895,6 +923,7 @@ const layoutOf=(c,r)=>(c.layouts||[]).find(l=>l.id===r.layoutId)||null;
    Cloud Function qui reçoit le webhook Stripe. Le client ne fait que lire.
    Une copie locale sert de secours hors ligne.                           */
 let premium={status:'free',until:null,plan:null};
+let accountCreated=null;   /* date de création du compte, pour l'antériorité bêta */
 const premKey=()=>'premium:'+uidKey();
 function readPremiumCache(){
   try{const r=Store.get(premKey());if(r)premium=JSON.parse(r);}catch(e){}
@@ -914,8 +943,16 @@ async function pullPremium(){
     readPremiumCache();
   }
 }
+/* Compte inscrit pendant la bêta : accès complet conservé à vie.
+   accountCreated vaut 0 pour les comptes antérieurs à ce champ,
+   qui sont donc par définition des comptes historiques. */
+function isBetaTester(){
+  return currentUser&&accountCreated!==null&&accountCreated<=BETA.limite;
+}
 function isPremium(){
   if(PREMIUM.test!==null)return !!PREMIUM.test;
+  if(BETA.actif)return true;
+  if(isBetaTester())return true;
   if(!premium||['active','trialing'].indexOf(premium.status)<0)return false;
   /* 3 jours de tolérance : un renouvellement peut mettre du temps à remonter */
   if(premium.until&&Date.now()>premium.until+3*864e5)return false;
@@ -2091,6 +2128,8 @@ $('#btnShare').onclick=shareRecap;
 /* ---------- paywall ---------- */
 /* Le partage est gratuit : le bouton reste toujours en état normal. */
 function refreshPremiumUI(){
+  const bp=$('#betaPill');
+  if(bp)bp.classList.toggle('hidden',!BETA.actif);
   const b=$('#btnShare');
   if(b&&b.classList.contains('locked')){
     b.classList.remove('locked');
@@ -2145,7 +2184,8 @@ function openPaywall(origin){
       '<p class="pnote">'+esc(PREMIUM.note)+'</p>'+
     '</div>'+
     '<div class="row"><button class="btn btn-ghost" id="mCancel">Plus tard</button><button class="btn btn-primary" id="mGo">S\'abonner</button></div>'+
-    '<button class="authlink" id="mRestore">J\'ai déjà un abonnement</button>');
+    '<button class="authlink" id="mRestore">J\'ai déjà un abonnement</button>'+
+    '<p class="modpriv"><a href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>');
   $('#mCancel').onclick=closeModal;
   $('#mGo').onclick=startCheckout;
   $('#mRestore').onclick=async()=>{
@@ -2448,11 +2488,19 @@ function openChangePass(){
 $('#btnAccount').onclick=()=>{
   const ok=isPremium();
   const jusqu=premium&&premium.until?' · jusqu\'au '+dmy(new Date(premium.until).toISOString()):'';
-  const abo=ok
-    ? '<div class="subline on"><b>'+esc(PREMIUM.name)+'</b><span>'+(premium.status==='trialing'?'Période d\'essai':'Abonnement actif')+jusqu+'</span></div>'
-      +(PREMIUM.portalUrl?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">Gérer mon abonnement</button>':'')
-    : '<div class="subline"><b>Offre gratuite</b><span>Statistiques et partage verrouillés</span></div>'
-      +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">Découvrir Premium</button>';
+  let abo;
+  if(BETA.actif){
+    abo='<div class="subline on"><b>Version bêta</b><span>Accès complet offert jusqu\'au '+esc(BETA.fin)+
+        '. Ton compte gardera cet accès ensuite.</span></div>';
+  }else if(isBetaTester()){
+    abo='<div class="subline on"><b>Accès bêta-testeur</b><span>Accès complet conservé, sans abonnement. Merci d\'avoir été là au début.</span></div>';
+  }else if(ok){
+    abo='<div class="subline on"><b>'+esc(PREMIUM.name)+'</b><span>'+(premium.status==='trialing'?'Période d\'essai':'Abonnement actif')+jusqu+'</span></div>'
+       +(PREMIUM.portalUrl?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">Gérer mon abonnement</button>':'');
+  }else{
+    abo='<div class="subline"><b>Offre gratuite</b><span>Statistiques détaillées verrouillées</span></div>'
+       +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">Découvrir Premium</button>';
+  }
   const byPass=hasPasswordProvider();
   openModal('<h3>Mon compte</h3>'+
     '<p class="txt">Connecté·e en tant que <b>'+esc(currentUser?currentUser.email:'')+'</b>'+
@@ -2465,7 +2513,8 @@ $('#btnAccount').onclick=()=>{
           '<button class="btn btn-ghost" id="mPass">Changer de mot de passe</button>'
         : '<p class="hintsm">Ton compte utilise la connexion Google : l\'adresse e-mail et le mot de passe se gèrent depuis ton compte Google.</p>')+
     '</div>'+
-    '<div class="row"><button class="btn btn-ghost" id="mLogout">Se déconnecter</button><button class="btn btn-primary" id="mOk">Enregistrer</button></div>');
+    '<div class="row"><button class="btn btn-ghost" id="mLogout">Se déconnecter</button><button class="btn btn-primary" id="mOk">Enregistrer</button></div>'+
+    '<p class="modpriv"><a href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>');
   const up=$('#mUp');if(up)up.onclick=()=>{closeModal();openPaywall('compte');};
   const po=$('#mPortal');if(po)po.onclick=openPortal;
   const me=$('#mEmail');if(me)me.onclick=openChangeEmail;
@@ -2504,7 +2553,7 @@ if(fbReady){
       afterCheckout();
     }else{
       dbCache=null;profileName='';S=null;
-      premium={status:'free',until:null,plan:null};
+      premium={status:'free',until:null,plan:null};accountCreated=null;
       setAuthMode('login');showAuth();
     }
   });

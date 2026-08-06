@@ -3,13 +3,14 @@
    Incrémente CACHE_VERSION à chaque mise en ligne
    pour forcer le rafraîchissement chez les utilisateurs.
    ========================================================= */
-const CACHE_VERSION = 'swinguppro-v11';
+const CACHE_VERSION = 'swinguppro-v15';
 
 /* Fichiers de l'application, mis en cache à l'installation */
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
+  './confidentialite.html',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-180.png'
