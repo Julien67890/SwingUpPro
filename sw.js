@@ -3,7 +3,7 @@
    Incrémente CACHE_VERSION à chaque mise en ligne
    pour forcer le rafraîchissement chez les utilisateurs.
    ========================================================= */
-const CACHE_VERSION = 'swinguppro-v19';
+const CACHE_VERSION = 'swinguppro-v20';
 
 /* Fichiers de l'application, mis en cache à l'installation */
 const APP_SHELL = [
@@ -57,6 +57,11 @@ self.addEventListener('fetch', event => {
      le cache refuse de les stocker, on les laisse passer intactes. */
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
+  /* Domaines tiers non prévus (mesure d'audience, Stripe, etc.) :
+     on ne s'en mêle pas. Les intercepter faisait remonter une erreur
+     dès qu'un bloqueur ou une coupure réseau faisait échouer l'appel. */
+  if (url.origin !== self.location.origin && !RUNTIME_HOSTS.includes(url.hostname)) return;
+
   /* Firebase / Firestore : toujours le réseau, jamais de cache.
      Sinon les données de compte seraient servies périmées. */
   if (url.hostname.includes('firebase') ||
@@ -104,7 +109,7 @@ self.addEventListener('fetch', event => {
           caches.open(CACHE_VERSION).then(c => c.put(req, copy));
         }
         return res;
-      });
+      }).catch(() => caches.match('./index.html'));
     })
   );
 });
