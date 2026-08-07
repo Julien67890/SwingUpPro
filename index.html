@@ -811,6 +811,11 @@ try{
   firebase.initializeApp(firebaseConfig);
   auth=firebase.auth();
   fs=firebase.firestore();
+  /* Certains réseaux, proxys, antivirus et bloqueurs cassent le canal
+     temps réel de Firestore (ERR_QUIC_PROTOCOL_ERROR). Ce réglage laisse
+     le SDK détecter le problème et basculer sur des requêtes classiques. */
+  try{fs.settings({experimentalAutoDetectLongPolling:true,merge:true});}
+  catch(e){console.warn('Réglage Firestore ignoré :',e);}
   fbReady=true;
 }catch(e){ console.error('Firebase non initialisé :',e); }
 
