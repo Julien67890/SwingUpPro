@@ -27,6 +27,9 @@
   --shadow:0 18px 40px -18px rgba(8,30,18,.55);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+/* Fraunces propose un axe « wonk » qui déforme volontairement certaines
+   lettres, dont le J. On le neutralise pour garder un dessin régulier. */
+body,body *{font-variation-settings:'SOFT' 0,'WONK' 0}
 html,body{height:100%}
 body{font-family:'Outfit',system-ui,-apple-system,sans-serif;color:var(--ink);
   background:radial-gradient(1200px 600px at 85% -10%, rgba(116,198,157,.30), transparent 60%),radial-gradient(900px 500px at -10% 110%, rgba(45,106,79,.25), transparent 55%),linear-gradient(160deg,#0f2a1a 0%, #16402a 45%, #1b4332 100%);
@@ -1978,11 +1981,11 @@ async function recapBlob(){
   const NH=S.holes, players=S.players;
   const PAD=36, NAMEW=176, TOTW=120;
   const cellW=NH>18?46:(NH>12?54:64);
-  const rowH=56, headH=196, gapT=30, footH=88;
+  const rowH=56, headH=196, gapT=30, legH=56, footH=88;
   const tableW=NAMEW+NH*cellW+TOTW;
   const W=PAD*2+tableW;
   const rows=2+players.length;
-  const HT=headH+gapT+rows*rowH+footH;
+  const HT=headH+gapT+rows*rowH+legH+footH;
   const scale=W>1100?1.5:2;
 
   const cvs=document.createElement('canvas');
@@ -2086,6 +2089,23 @@ async function recapBlob(){
       ctx.fillStyle=vp<0?'#2d6a4f':(vp>0?'#d62828':'#8b8770');
       ctx.fillText(vp===0?'PAR':(vp>0?'+'+vp:String(vp)),totX+TOTW/2+22,my+1);
     }
+  });
+
+  /* Légende : la même que dans l'app, pour que la notation se lise
+     sans connaître le code des cercles et des carrés. */
+  const leg=[[-1,'Birdie'],[-2,'Eagle +'],[1,'Bogey'],[2,'Double +']];
+  ctx.font='500 14px '+O;
+  const symb=19, ecart=9, entre=26;
+  let total=0;
+  leg.forEach(l=>{total+=symb+ecart+ctx.measureText(l[1]).width;});
+  total+=entre*(leg.length-1);
+  let lx=(W-total)/2;
+  const ly=y0+rows*rowH+legH/2+2;
+  leg.forEach(l=>{
+    drawNote(ctx,lx+symb/2,ly,l[0]<0?13:12,l[0]);
+    ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillStyle='#8b8770';
+    ctx.fillText(l[1],lx+symb+ecart,ly+1);
+    lx+=symb+ecart+ctx.measureText(l[1]).width+entre;
   });
 
   /* Signature : c'est cette ligne qui fait connaître l'app quand la carte circule. */
