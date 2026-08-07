@@ -150,7 +150,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .pip-name{display:inline-flex;align-items:center;gap:7px;max-width:100%}
 .pip-name i{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
 .pip-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sc{display:inline-grid;place-items:center;width:25px;height:25px;font-weight:600;color:#2c3a30}
+.sc{display:inline-grid;place-items:center;width:29px;height:29px;margin-top:3px;font-weight:600;color:#2c3a30}
 .sc.birdie{border:1.6px solid var(--green-mid);border-radius:50%;color:var(--green-mid)}
 .sc.eagle{border:1.6px solid var(--green-mid);border-radius:50%;color:var(--green-mid);box-shadow:0 0 0 2.6px var(--cream),0 0 0 4.2px var(--green-mid)}
 .sc.bogey{border:1.6px solid var(--flag);border-radius:6px;color:var(--flag)}
@@ -780,8 +780,8 @@ const PREMIUM={
    on peut prolonger l'affichage sans reclasser des comptes. */
 const BETA={
   actif:true,
-  fin:'31 mars 2027',                          /* texte affiché */
-  limite:Date.parse('2027-03-31T23:59:59+02:00') /* antériorité des comptes */
+  fin:'31 décembre 2026',                      /* texte affiché */
+  limite:Date.parse('2026-12-31T23:59:59+01:00') /* antériorité des comptes */
 };
 /* ▲▲▲  Rien d'autre à modifier en dessous.  ▲▲▲ */
 
@@ -1977,7 +1977,7 @@ async function recapBlob(){
   const NH=S.holes, players=S.players;
   const PAD=36, NAMEW=176, TOTW=120;
   const cellW=NH>18?46:(NH>12?54:64);
-  const rowH=56, headH=196, gapT=30, footH=112;
+  const rowH=56, headH=196, gapT=30, footH=88;
   const tableW=NAMEW+NH*cellW+TOTW;
   const W=PAD*2+tableW;
   const rows=2+players.length;
@@ -1999,30 +1999,30 @@ async function recapBlob(){
 
   ctx.textBaseline='alphabetic';
 
-  /* Marque, en haut à gauche. */
-  drawFlag(ctx,PAD,34,22,'#f6f3e9');
-  ctx.textAlign='left';ctx.font='900 19px '+F;ctx.fillStyle='#f6f3e9';
-  ctx.fillText('SwingUp',PAD+32,52);
-
-  /* Date, en haut à droite. */
-  const dt=new Date(S.started||Date.now());
-  const dateTxt=isNaN(dt)?'':dt.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
-  if(dateTxt){
-    ctx.textAlign='right';ctx.font='500 15px '+O;ctx.fillStyle='rgba(116,198,157,.9)';
-    ctx.fillText(dateTxt,W-PAD,52);
-  }
+  /* Marque, centrée au-dessus du titre. */
+  ctx.font='900 26px '+F;
+  const bn='SwingUp', bw=ctx.measureText(bn).width, bs=30, bg=13;
+  const bx=(W-(bs+bg+bw))/2;
+  drawFlag(ctx,bx,32,bs,'#f6f3e9');
+  ctx.textAlign='left';ctx.fillStyle='#f6f3e9';
+  ctx.fillText(bn,bx+bs+bg,56);
 
   /* Titre : le nom du parcours prend la vedette. */
-  ctx.textAlign='left';ctx.font='900 38px '+F;ctx.fillStyle='#f6f3e9';
-  ctx.fillText(ellipsize(ctx,S.courseName||'Carte de score',W-PAD*2),PAD,124);
+  ctx.textAlign='center';ctx.font='900 38px '+F;ctx.fillStyle='#f6f3e9';
+  ctx.fillText(ellipsize(ctx,S.courseName||'Carte de score',W-PAD*2),W/2,124);
 
   const done=S.pars.map((_,h)=>players.every(p=>typeof p.scores[h]==='number')).filter(Boolean).length;
+  const dt=new Date(S.started||Date.now());
+  const dateTxt=isNaN(dt)?'':dt.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  const holesTxt=NH+' trous · par '+parTot();
   const bits=[];
-  if(S.layoutName)bits.push(S.layoutName);
-  bits.push(NH+' trous · par '+parTot());
+  /* On n'affiche le nom du parcours que s'il apporte quelque chose. */
+  if(S.layoutName&&S.layoutName.trim().toLowerCase()!==(NH+' trous'))bits.push(S.layoutName);
+  bits.push(holesTxt);
   bits.push(done===NH?'Partie terminée':done+'/'+NH+' trous saisis');
+  if(dateTxt)bits.push(dateTxt);
   ctx.font='500 15px '+O;ctx.fillStyle='rgba(246,243,233,.62)';
-  ctx.fillText(bits.join('   ·   '),PAD,155);
+  ctx.fillText(bits.join('   ·   '),W/2,155);
 
   /* Tableau, posé sur le crème comme les cartes de l'app. */
   const x0=PAD, y0=headH+gapT, totX=x0+NAMEW+NH*cellW;
@@ -2087,19 +2087,13 @@ async function recapBlob(){
     }
   });
 
-  /* Signature : c'est ce bloc qui fait connaître l'app quand la carte circule. */
+  /* Signature : c'est cette ligne qui fait connaître l'app quand la carte circule. */
   ctx.textAlign='center';ctx.textBaseline='alphabetic';
-  const sigY=HT-footH+56;
+  const sigY=HT-footH+46;
   ctx.strokeStyle='#e0dac6';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(PAD,sigY-32);ctx.lineTo(W-PAD,sigY-32);ctx.stroke();
-  ctx.font='900 21px '+F;
-  const nm='SwingUp', nw=ctx.measureText(nm).width, fs=23, fg=11;
-  const fx=(W-(fs+fg+nw))/2;
-  drawFlag(ctx,fx,sigY-19,fs);
-  ctx.textAlign='left';ctx.fillStyle='#1b4332';
-  ctx.fillText(nm,fx+fs+fg,sigY);
-  ctx.textAlign='center';ctx.font='500 14px '+O;ctx.fillStyle='#8b8770';
-  ctx.fillText(SHARE_LINK.url?SHARE_LINK.url:SHARE_LINK.label,W/2,sigY+26);
+  ctx.beginPath();ctx.moveTo(PAD,sigY-26);ctx.lineTo(W-PAD,sigY-26);ctx.stroke();
+  ctx.font='500 15px '+O;ctx.fillStyle='#8b8770';
+  ctx.fillText(SHARE_LINK.url?SHARE_LINK.label+' · '+SHARE_LINK.url:SHARE_LINK.label,W/2,sigY);
 
   return await new Promise(res=>cvs.toBlob(res,'image/png',0.95));
 }
