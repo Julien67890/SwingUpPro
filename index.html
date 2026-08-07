@@ -724,6 +724,599 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 <div id="confetti"></div>
 <script>
 const $=s=>document.querySelector(s);
+
+/* ================= DICTIONNAIRES =================
+   La clé est le texte français. Une entrée absente laisse le français
+   s'afficher : aucune traduction manquante ne casse l'interface.
+   Pour ajouter une langue : l'ajouter à LANGUES, NOMS_LANGUES, LOCALES
+   et créer son bloc ici.                                            */
+const LANGS={
+
+en:{
+'Carte de score':'Scorecard',
+'Connecte-toi pour retrouver tes parties':'Sign in to find your rounds',
+'Se connecter':'Sign in',
+'Créer un compte':'Create account',
+'Prénom / pseudo':'First name / nickname',
+'Adresse e-mail':'Email address',
+'Mot de passe':'Password',
+'ou':'or',
+'Continuer avec Google':'Continue with Google',
+'Mot de passe oublié ?':'Forgot your password?',
+'Tes parties sont enregistrées sur ton compte':'Your rounds are saved to your account',
+'et te suivent sur tous tes appareils.':'and follow you on every device.',
+'Politique de confidentialité':'Privacy policy',
+'Parcours en cours':'Round in progress',
+'Bêta':'Beta',
+'Nouvelle partie':'New round',
+'Qui joue,':'Who is playing,',
+'et sur combien de trous ?':'and over how many holes?',
+'Tous les trous démarrent en par 4. Tu pourras les ajuster trou par trou pendant la partie.':'Every hole starts at par 4. You can adjust them hole by hole during the round.',
+'Joueurs':'Players',
+'joueurs':'players',
+'Noms':'Names',
+'Golf':'Course',
+'Partie libre':'Casual round',
+'Parcours':'Layout',
+'Commencer la partie':'Start the round',
+'Reprendre la partie':'Resume round',
+'Statistiques':'Statistics',
+'Ta partie en cours reste sur cet appareil.':'Your round in progress stays on this device.',
+'Une fois enregistrée, elle est synchronisée sur ton compte.':'Once saved, it syncs to your account.',
+'Coups joués':'Strokes played',
+'Vs par':'To par',
+'Trous saisis':'Holes entered',
+'Trou en cours':'Current hole',
+'Par':'Par',
+'Trou précédent':'Previous hole',
+'Trou suivant':'Next hole',
+'Voir le récapitulatif':'View summary',
+'Récapitulatif':'Summary',
+'Partie terminée':'Round complete',
+'Enregistrer ma partie':'Save my round',
+'Partager le récapitulatif':'Share the summary',
+'Retoucher la carte':'Edit the card',
+'Parties jouées':'Rounds played',
+'Évolution trou par trou':'Hole-by-hole progress',
+'Birdie':'Birdie',
+'Eagle +':'Eagle +',
+'Bogey':'Bogey',
+'Double +':'Double +',
+'Aucune partie enregistrée':'No round saved yet',
+'Termine une partie puis enregistre-la sur un golf : tes scores trou par trou apparaîtront ici, partie après partie.':'Finish a round and save it to a course: your hole-by-hole scores will appear here, round after round.',
+'Au moins 6 caractères':'At least 6 characters',
+'Augmenter le par':'Increase par',
+'Diminuer le par':'Decrease par',
+"Comment on t'appelle ?":'What should we call you?',
+'Mon compte':'My account',
+'Renommer le golf':'Rename course',
+'Renommer le parcours':'Rename layout',
+'Retour':'Back',
+"Retour à l'accueil":'Back to home',
+'Revenir à la carte':'Back to the card',
+'Supprimer le golf':'Delete course',
+'Supprimer le parcours':'Delete layout',
+'Terminer la partie':'Finish the round',
+'toi@exemple.fr':'you@example.com',
+'Langue':'Language',
+'Version bêta':'Beta version',
+
+'Accepter':'Accept',
+'Refuser':'Decline',
+'Annuler':'Cancel',
+'Valider':'Confirm',
+'Enregistrer':'Save',
+'Créer':'Create',
+'Créer et enregistrer':'Create and save',
+'Fermer':'Close',
+'Compris':'Got it',
+'Parfait':'Perfect',
+'Continuer':'Continue',
+'Plus tard':'Later',
+'Supprimer':'Delete',
+'Renommer':'Rename',
+'Se déconnecter':'Sign out',
+'Voir les stats':'View stats',
+'Quel golf ?':'Which course?',
+'Sur quel golf ?':'On which course?',
+'Quel parcours ?':'Which layout?',
+'Choisis un golf enregistré pour retrouver ses parcours et leurs pars.':'Pick a saved course to find its layouts and their pars.',
+'Choisis un joueur déjà suivi pour retrouver ses statistiques, ou ferme et saisis un nouveau nom.':'Pick a player you already track to see their statistics, or close and enter a new name.',
+'Partie enregistrée':'Round saved',
+'Tu veux l\'enregistrer pour suivre tes statistiques trou par trou ?':'Save it to track your hole-by-hole statistics?',
+'Carte incomplète':'Incomplete card',
+'Il manque des scores. Tu peux quand même l\'enregistrer : les trous vides seront ignorés dans les moyennes.':'Some scores are missing. You can still save it: empty holes are left out of the averages.',
+'Supprimer cette partie ?':'Delete this round?',
+'Supprimer cette partie':'Delete this round',
+'Modifier la partie':'Edit the round',
+'Ce golf existe déjà':'This course already exists',
+'Ce parcours existe déjà':'This layout already exists',
+'Ce nom est déjà pris':'That name is taken',
+'Pars différents':'Different pars',
+'Choisir un autre nom':'Choose another name',
+'Regrouper':'Merge',
+'Regrouper avec ces pars':'Merge with these pars',
+'Vérifie les pars ci-dessous : ce sont ceux qui seront conservés pour le parcours regroupé. Les cases en rouge sont celles où les deux versions divergent.':'Check the pars below: these are the ones kept for the merged layout. Red cells are where the two versions differ.',
+'Golf renommé':'Course renamed',
+'Golf supprimé':'Course deleted',
+'Parcours renommé':'Layout renamed',
+'Parcours supprimé':'Layout deleted',
+'Parcours regroupés':'Layouts merged',
+'Parcours terminé':'Layout complete',
+'Partie modifiée':'Round updated',
+'Partie supprimée':'Round deleted',
+'Hors ligne : synchro différée':'Offline: sync postponed',
+'Image enregistrée':'Image saved',
+'Image indisponible':'Image unavailable',
+'Nom mis à jour':'Name updated',
+'Changer d\'adresse e-mail':'Change email address',
+'Changer de mot de passe':'Change password',
+'Mot de passe actuel':'Current password',
+'Nouveau mot de passe':'New password',
+'Confirme le nouveau':'Confirm the new one',
+'Nouvelle adresse':'New address',
+'Vérifie ta nouvelle adresse':'Check your new address',
+'Tant que ce n\'est pas fait, continue à te connecter avec ton ancienne adresse.':'Until that is done, keep signing in with your old address.',
+'Adresse e-mail mise à jour':'Email address updated',
+'Mot de passe mis à jour':'Password updated',
+'E-mail de réinitialisation envoyé':'Reset email sent',
+'Ce compte existe déjà':'This account already exists',
+'Saisis-le une dernière fois : on associe Google à ce compte, et tu pourras ensuite utiliser l\'un ou l\'autre. Tes parties sont conservées.':'Enter it one last time: we will link Google to this account, and you can then use either. Your rounds are kept.',
+'Associer':'Link',
+'Google associé à ton compte':'Google linked to your account',
+'Connecte-toi d\'abord':'Sign in first',
+'Découvrir Premium':'Discover Premium',
+'Gérer mon abonnement':'Manage my subscription',
+'S\'abonner':'Subscribe',
+'J\'ai déjà un abonnement':'I already have a subscription',
+'Abonnement actif':'Subscription active',
+'Aucun abonnement sur ce compte':'No subscription on this account',
+'Vérification…':'Checking…',
+'Paiement pas encore ouvert':'Payment not open yet',
+'L\'abonnement n\'est pas encore en service : les Cloud Functions qui gèrent le paiement ne sont pas déployées.':'Subscriptions are not live yet: the Cloud Functions handling payment are not deployed.',
+'Écris-nous si tu veux être prévenu·e de son ouverture.':'Write to us if you would like to be told when it opens.',
+'Gestion pas encore ouverte':'Management not open yet',
+'Le portail de gestion de l\'abonnement n\'est pas encore en service.':'The subscription management portal is not live yet.',
+'Paiement indisponible, réessaie':'Payment unavailable, try again',
+'Gestion indisponible, réessaie':'Management unavailable, try again',
+'Merci !':'Thank you!',
+'On active ton abonnement, ça prend quelques secondes…':'We are activating your subscription, this takes a few seconds…',
+'Premium activé':'Premium activated',
+'Les statistiques et le partage du récapitulatif sont débloqués sur tous tes appareils.':'Statistics and summary sharing are unlocked on all your devices.',
+'Paiement enregistré':'Payment recorded',
+'L\'activation prend parfois une minute. Rouvre l\'app dans un instant, ou utilise « J\'ai déjà un abonnement » depuis l\'écran Premium.':'Activation sometimes takes a minute. Reopen the app shortly, or use “I already have a subscription” on the Premium screen.',
+'Adresse e-mail invalide.':'Invalid email address.',
+'Aucun compte avec cet e-mail. Si tu es passé·e par Google, utilise « Continuer avec Google ».':'No account with this email. If you signed up with Google, use “Continue with Google”.',
+'Mot de passe incorrect.':'Incorrect password.',
+'E-mail ou mot de passe incorrect. Si ton compte a été créé avec Google, connecte-toi via « Continuer avec Google ».':'Incorrect email or password. If your account was created with Google, sign in with “Continue with Google”.',
+'Un compte existe déjà avec cet e-mail. Connecte-toi, ou utilise « Continuer avec Google ».':'An account already exists with this email. Sign in, or use “Continue with Google”.',
+'Mot de passe trop court (6 caractères minimum).':'Password too short (6 characters minimum).',
+'Trop de tentatives, réessaie plus tard.':'Too many attempts, try again later.',
+'Pas de connexion. Vérifie ton réseau.':'No connection. Check your network.',
+'Ce mode de connexion n\'est pas activé dans Firebase.':'This sign-in method is not enabled in Firebase.',
+'La fenêtre Google a été bloquée par le navigateur.':'The Google window was blocked by the browser.',
+'Ce domaine n\'est pas autorisé dans Firebase.':'This domain is not authorised in Firebase.',
+'Un compte existe déjà avec cet e-mail, via un autre mode de connexion.':'An account already exists with this email, using another sign-in method.',
+'Par sécurité, reconnecte-toi avant de modifier ton compte.':'For security, sign in again before changing your account.',
+'Indique ton mot de passe actuel.':'Enter your current password.',
+'La nouvelle adresse e-mail est invalide.':'The new email address is invalid.',
+'Une erreur est survenue. Réessaie.':'Something went wrong. Try again.',
+'Mesure d\u2019audience':'Analytics'
+},
+
+es:{
+'Carte de score':'Tarjeta de puntuación',
+'Connecte-toi pour retrouver tes parties':'Inicia sesión para recuperar tus partidas',
+'Se connecter':'Iniciar sesión',
+'Créer un compte':'Crear una cuenta',
+'Prénom / pseudo':'Nombre / apodo',
+'Adresse e-mail':'Correo electrónico',
+'Mot de passe':'Contraseña',
+'ou':'o',
+'Continuer avec Google':'Continuar con Google',
+'Mot de passe oublié ?':'¿Olvidaste tu contraseña?',
+'Tes parties sont enregistrées sur ton compte':'Tus partidas se guardan en tu cuenta',
+'et te suivent sur tous tes appareils.':'y te acompañan en todos tus dispositivos.',
+'Politique de confidentialité':'Política de privacidad',
+'Parcours en cours':'Partida en curso',
+'Bêta':'Beta',
+'Nouvelle partie':'Nueva partida',
+'Qui joue,':'¿Quién juega,',
+'et sur combien de trous ?':'y en cuántos hoyos?',
+'Tous les trous démarrent en par 4. Tu pourras les ajuster trou par trou pendant la partie.':'Todos los hoyos empiezan en par 4. Podrás ajustarlos hoyo a hoyo durante la partida.',
+'Joueurs':'Jugadores',
+'joueurs':'jugadores',
+'Noms':'Nombres',
+'Golf':'Campo',
+'Partie libre':'Partida libre',
+'Parcours':'Recorrido',
+'Commencer la partie':'Empezar la partida',
+'Reprendre la partie':'Reanudar la partida',
+'Statistiques':'Estadísticas',
+'Ta partie en cours reste sur cet appareil.':'Tu partida en curso permanece en este dispositivo.',
+'Une fois enregistrée, elle est synchronisée sur ton compte.':'Una vez guardada, se sincroniza con tu cuenta.',
+'Coups joués':'Golpes jugados',
+'Vs par':'Sobre par',
+'Trous saisis':'Hoyos registrados',
+'Trou en cours':'Hoyo actual',
+'Par':'Par',
+'Trou précédent':'Hoyo anterior',
+'Trou suivant':'Hoyo siguiente',
+'Voir le récapitulatif':'Ver el resumen',
+'Récapitulatif':'Resumen',
+'Partie terminée':'Partida terminada',
+'Enregistrer ma partie':'Guardar mi partida',
+'Partager le récapitulatif':'Compartir el resumen',
+'Retoucher la carte':'Retocar la tarjeta',
+'Parties jouées':'Partidas jugadas',
+'Évolution trou par trou':'Evolución hoyo a hoyo',
+'Birdie':'Birdie',
+'Eagle +':'Eagle +',
+'Bogey':'Bogey',
+'Double +':'Doble +',
+'Aucune partie enregistrée':'Ninguna partida guardada',
+'Termine une partie puis enregistre-la sur un golf : tes scores trou par trou apparaîtront ici, partie après partie.':'Termina una partida y guárdala en un campo: tus resultados hoyo a hoyo aparecerán aquí, partida tras partida.',
+'Au moins 6 caractères':'Al menos 6 caracteres',
+'Augmenter le par':'Aumentar el par',
+'Diminuer le par':'Reducir el par',
+"Comment on t'appelle ?":'¿Cómo te llamamos?',
+'Mon compte':'Mi cuenta',
+'Renommer le golf':'Renombrar el campo',
+'Renommer le parcours':'Renombrar el recorrido',
+'Retour':'Volver',
+"Retour à l'accueil":'Volver al inicio',
+'Revenir à la carte':'Volver a la tarjeta',
+'Supprimer le golf':'Eliminar el campo',
+'Supprimer le parcours':'Eliminar el recorrido',
+'Terminer la partie':'Terminar la partida',
+'toi@exemple.fr':'tu@ejemplo.com',
+'Langue':'Idioma',
+'Version bêta':'Versión beta',
+
+'Accepter':'Aceptar',
+'Refuser':'Rechazar',
+'Annuler':'Cancelar',
+'Valider':'Confirmar',
+'Enregistrer':'Guardar',
+'Créer':'Crear',
+'Créer et enregistrer':'Crear y guardar',
+'Fermer':'Cerrar',
+'Compris':'Entendido',
+'Parfait':'Perfecto',
+'Continuer':'Continuar',
+'Plus tard':'Más tarde',
+'Supprimer':'Eliminar',
+'Renommer':'Renombrar',
+'Se déconnecter':'Cerrar sesión',
+'Voir les stats':'Ver estadísticas',
+'Quel golf ?':'¿Qué campo?',
+'Sur quel golf ?':'¿En qué campo?',
+'Quel parcours ?':'¿Qué recorrido?',
+'Choisis un golf enregistré pour retrouver ses parcours et leurs pars.':'Elige un campo guardado para recuperar sus recorridos y sus pares.',
+'Choisis un joueur déjà suivi pour retrouver ses statistiques, ou ferme et saisis un nouveau nom.':'Elige un jugador ya registrado para ver sus estadísticas, o cierra e introduce un nombre nuevo.',
+'Partie enregistrée':'Partida guardada',
+'Tu veux l\'enregistrer pour suivre tes statistiques trou par trou ?':'¿Quieres guardarla para seguir tus estadísticas hoyo a hoyo?',
+'Carte incomplète':'Tarjeta incompleta',
+'Il manque des scores. Tu peux quand même l\'enregistrer : les trous vides seront ignorés dans les moyennes.':'Faltan resultados. Puedes guardarla igualmente: los hoyos vacíos no cuentan en las medias.',
+'Supprimer cette partie ?':'¿Eliminar esta partida?',
+'Supprimer cette partie':'Eliminar esta partida',
+'Modifier la partie':'Editar la partida',
+'Ce golf existe déjà':'Este campo ya existe',
+'Ce parcours existe déjà':'Este recorrido ya existe',
+'Ce nom est déjà pris':'Ese nombre ya está en uso',
+'Pars différents':'Pares distintos',
+'Choisir un autre nom':'Elegir otro nombre',
+'Regrouper':'Agrupar',
+'Regrouper avec ces pars':'Agrupar con estos pares',
+'Vérifie les pars ci-dessous : ce sont ceux qui seront conservés pour le parcours regroupé. Les cases en rouge sont celles où les deux versions divergent.':'Comprueba los pares siguientes: son los que se conservarán en el recorrido agrupado. Las casillas rojas son las que difieren entre versiones.',
+'Golf renommé':'Campo renombrado',
+'Golf supprimé':'Campo eliminado',
+'Parcours renommé':'Recorrido renombrado',
+'Parcours supprimé':'Recorrido eliminado',
+'Parcours regroupés':'Recorridos agrupados',
+'Parcours terminé':'Recorrido terminado',
+'Partie modifiée':'Partida actualizada',
+'Partie supprimée':'Partida eliminada',
+'Hors ligne : synchro différée':'Sin conexión: sincronización aplazada',
+'Image enregistrée':'Imagen guardada',
+'Image indisponible':'Imagen no disponible',
+'Nom mis à jour':'Nombre actualizado',
+'Changer d\'adresse e-mail':'Cambiar el correo electrónico',
+'Changer de mot de passe':'Cambiar la contraseña',
+'Mot de passe actuel':'Contraseña actual',
+'Nouveau mot de passe':'Nueva contraseña',
+'Confirme le nouveau':'Confirma la nueva',
+'Nouvelle adresse':'Nueva dirección',
+'Vérifie ta nouvelle adresse':'Verifica tu nueva dirección',
+'Tant que ce n\'est pas fait, continue à te connecter avec ton ancienne adresse.':'Hasta que lo hagas, sigue iniciando sesión con tu dirección anterior.',
+'Adresse e-mail mise à jour':'Correo electrónico actualizado',
+'Mot de passe mis à jour':'Contraseña actualizada',
+'E-mail de réinitialisation envoyé':'Correo de restablecimiento enviado',
+'Ce compte existe déjà':'Esta cuenta ya existe',
+'Saisis-le une dernière fois : on associe Google à ce compte, et tu pourras ensuite utiliser l\'un ou l\'autre. Tes parties sont conservées.':'Introdúcela una última vez: vincularemos Google a esta cuenta y luego podrás usar cualquiera de las dos. Tus partidas se conservan.',
+'Associer':'Vincular',
+'Google associé à ton compte':'Google vinculado a tu cuenta',
+'Connecte-toi d\'abord':'Inicia sesión primero',
+'Découvrir Premium':'Descubrir Premium',
+'Gérer mon abonnement':'Gestionar mi suscripción',
+'S\'abonner':'Suscribirse',
+'J\'ai déjà un abonnement':'Ya tengo una suscripción',
+'Abonnement actif':'Suscripción activa',
+'Aucun abonnement sur ce compte':'Ninguna suscripción en esta cuenta',
+'Vérification…':'Comprobando…',
+'Paiement pas encore ouvert':'El pago aún no está abierto',
+'L\'abonnement n\'est pas encore en service : les Cloud Functions qui gèrent le paiement ne sont pas déployées.':'La suscripción aún no está operativa: las Cloud Functions de pago no están desplegadas.',
+'Écris-nous si tu veux être prévenu·e de son ouverture.':'Escríbenos si quieres que te avisemos cuando esté disponible.',
+'Gestion pas encore ouverte':'Gestión aún no disponible',
+'Le portail de gestion de l\'abonnement n\'est pas encore en service.':'El portal de gestión de la suscripción aún no está operativo.',
+'Paiement indisponible, réessaie':'Pago no disponible, inténtalo de nuevo',
+'Gestion indisponible, réessaie':'Gestión no disponible, inténtalo de nuevo',
+'Merci !':'¡Gracias!',
+'On active ton abonnement, ça prend quelques secondes…':'Estamos activando tu suscripción, tardará unos segundos…',
+'Premium activé':'Premium activado',
+'Les statistiques et le partage du récapitulatif sont débloqués sur tous tes appareils.':'Las estadísticas y el resumen compartido están desbloqueados en todos tus dispositivos.',
+'Paiement enregistré':'Pago registrado',
+'L\'activation prend parfois une minute. Rouvre l\'app dans un instant, ou utilise « J\'ai déjà un abonnement » depuis l\'écran Premium.':'La activación puede tardar un minuto. Vuelve a abrir la app en un momento, o usa «Ya tengo una suscripción» en la pantalla Premium.',
+'Adresse e-mail invalide.':'Correo electrónico no válido.',
+'Aucun compte avec cet e-mail. Si tu es passé·e par Google, utilise « Continuer avec Google ».':'Ninguna cuenta con este correo. Si te registraste con Google, usa «Continuar con Google».',
+'Mot de passe incorrect.':'Contraseña incorrecta.',
+'E-mail ou mot de passe incorrect. Si ton compte a été créé avec Google, connecte-toi via « Continuer avec Google ».':'Correo o contraseña incorrectos. Si creaste la cuenta con Google, inicia sesión con «Continuar con Google».',
+'Un compte existe déjà avec cet e-mail. Connecte-toi, ou utilise « Continuer avec Google ».':'Ya existe una cuenta con este correo. Inicia sesión o usa «Continuar con Google».',
+'Mot de passe trop court (6 caractères minimum).':'Contraseña demasiado corta (mínimo 6 caracteres).',
+'Trop de tentatives, réessaie plus tard.':'Demasiados intentos, inténtalo más tarde.',
+'Pas de connexion. Vérifie ton réseau.':'Sin conexión. Comprueba tu red.',
+'Ce mode de connexion n\'est pas activé dans Firebase.':'Este método de inicio de sesión no está activado en Firebase.',
+'La fenêtre Google a été bloquée par le navigateur.':'El navegador ha bloqueado la ventana de Google.',
+'Ce domaine n\'est pas autorisé dans Firebase.':'Este dominio no está autorizado en Firebase.',
+'Un compte existe déjà avec cet e-mail, via un autre mode de connexion.':'Ya existe una cuenta con este correo, con otro método de inicio de sesión.',
+'Par sécurité, reconnecte-toi avant de modifier ton compte.':'Por seguridad, vuelve a iniciar sesión antes de modificar tu cuenta.',
+'Indique ton mot de passe actuel.':'Introduce tu contraseña actual.',
+'La nouvelle adresse e-mail est invalide.':'La nueva dirección de correo no es válida.',
+'Une erreur est survenue. Réessaie.':'Se ha producido un error. Inténtalo de nuevo.',
+'Mesure d\u2019audience':'Medición de audiencia'
+},
+
+de:{
+'Carte de score':'Scorekarte',
+'Connecte-toi pour retrouver tes parties':'Melde dich an, um deine Runden zu finden',
+'Se connecter':'Anmelden',
+'Créer un compte':'Konto erstellen',
+'Prénom / pseudo':'Vorname / Spitzname',
+'Adresse e-mail':'E-Mail-Adresse',
+'Mot de passe':'Passwort',
+'ou':'oder',
+'Continuer avec Google':'Weiter mit Google',
+'Mot de passe oublié ?':'Passwort vergessen?',
+'Tes parties sont enregistrées sur ton compte':'Deine Runden werden in deinem Konto gespeichert',
+'et te suivent sur tous tes appareils.':'und begleiten dich auf allen Geräten.',
+'Politique de confidentialité':'Datenschutzerklärung',
+'Parcours en cours':'Laufende Runde',
+'Bêta':'Beta',
+'Nouvelle partie':'Neue Runde',
+'Qui joue,':'Wer spielt,',
+'et sur combien de trous ?':'und über wie viele Löcher?',
+'Tous les trous démarrent en par 4. Tu pourras les ajuster trou par trou pendant la partie.':'Alle Löcher starten mit Par 4. Du kannst sie während der Runde Loch für Loch anpassen.',
+'Joueurs':'Spieler',
+'joueurs':'Spieler',
+'Noms':'Namen',
+'Golf':'Golfplatz',
+'Partie libre':'Freie Runde',
+'Parcours':'Platz',
+'Commencer la partie':'Runde starten',
+'Reprendre la partie':'Runde fortsetzen',
+'Statistiques':'Statistiken',
+'Ta partie en cours reste sur cet appareil.':'Deine laufende Runde bleibt auf diesem Gerät.',
+'Une fois enregistrée, elle est synchronisée sur ton compte.':'Nach dem Speichern wird sie mit deinem Konto synchronisiert.',
+'Coups joués':'Gespielte Schläge',
+'Vs par':'Zum Par',
+'Trous saisis':'Erfasste Löcher',
+'Trou en cours':'Aktuelles Loch',
+'Par':'Par',
+'Trou précédent':'Vorheriges Loch',
+'Trou suivant':'Nächstes Loch',
+'Voir le récapitulatif':'Zusammenfassung ansehen',
+'Récapitulatif':'Zusammenfassung',
+'Partie terminée':'Runde beendet',
+'Enregistrer ma partie':'Runde speichern',
+'Partager le récapitulatif':'Zusammenfassung teilen',
+'Retoucher la carte':'Karte bearbeiten',
+'Parties jouées':'Gespielte Runden',
+'Évolution trou par trou':'Entwicklung Loch für Loch',
+'Birdie':'Birdie',
+'Eagle +':'Eagle +',
+'Bogey':'Bogey',
+'Double +':'Doppel +',
+'Aucune partie enregistrée':'Keine Runde gespeichert',
+'Termine une partie puis enregistre-la sur un golf : tes scores trou par trou apparaîtront ici, partie après partie.':'Beende eine Runde und speichere sie auf einem Golfplatz: Deine Ergebnisse Loch für Loch erscheinen hier, Runde für Runde.',
+'Au moins 6 caractères':'Mindestens 6 Zeichen',
+'Augmenter le par':'Par erhöhen',
+'Diminuer le par':'Par verringern',
+"Comment on t'appelle ?":'Wie sollen wir dich nennen?',
+'Mon compte':'Mein Konto',
+'Renommer le golf':'Golfplatz umbenennen',
+'Renommer le parcours':'Platz umbenennen',
+'Retour':'Zurück',
+"Retour à l'accueil":'Zurück zur Startseite',
+'Revenir à la carte':'Zurück zur Karte',
+'Supprimer le golf':'Golfplatz löschen',
+'Supprimer le parcours':'Platz löschen',
+'Terminer la partie':'Runde beenden',
+'toi@exemple.fr':'du@beispiel.de',
+'Langue':'Sprache',
+'Version bêta':'Beta-Version',
+
+'Accepter':'Akzeptieren',
+'Refuser':'Ablehnen',
+'Annuler':'Abbrechen',
+'Valider':'Bestätigen',
+'Enregistrer':'Speichern',
+'Créer':'Erstellen',
+'Créer et enregistrer':'Erstellen und speichern',
+'Fermer':'Schließen',
+'Compris':'Verstanden',
+'Parfait':'Perfekt',
+'Continuer':'Weiter',
+'Plus tard':'Später',
+'Supprimer':'Löschen',
+'Renommer':'Umbenennen',
+'Se déconnecter':'Abmelden',
+'Voir les stats':'Statistiken ansehen',
+'Quel golf ?':'Welcher Golfplatz?',
+'Sur quel golf ?':'Auf welchem Golfplatz?',
+'Quel parcours ?':'Welcher Platz?',
+'Choisis un golf enregistré pour retrouver ses parcours et leurs pars.':'Wähle einen gespeicherten Golfplatz, um seine Plätze und deren Par zu finden.',
+'Choisis un joueur déjà suivi pour retrouver ses statistiques, ou ferme et saisis un nouveau nom.':'Wähle einen bereits erfassten Spieler, um seine Statistiken zu sehen, oder schließe und gib einen neuen Namen ein.',
+'Partie enregistrée':'Runde gespeichert',
+'Tu veux l\'enregistrer pour suivre tes statistiques trou par trou ?':'Möchtest du sie speichern, um deine Statistiken Loch für Loch zu verfolgen?',
+'Carte incomplète':'Unvollständige Karte',
+'Il manque des scores. Tu peux quand même l\'enregistrer : les trous vides seront ignorés dans les moyennes.':'Es fehlen Ergebnisse. Du kannst sie trotzdem speichern: leere Löcher zählen nicht in den Durchschnitten.',
+'Supprimer cette partie ?':'Diese Runde löschen?',
+'Supprimer cette partie':'Diese Runde löschen',
+'Modifier la partie':'Runde bearbeiten',
+'Ce golf existe déjà':'Dieser Golfplatz existiert bereits',
+'Ce parcours existe déjà':'Dieser Platz existiert bereits',
+'Ce nom est déjà pris':'Dieser Name ist vergeben',
+'Pars différents':'Unterschiedliche Par',
+'Choisir un autre nom':'Anderen Namen wählen',
+'Regrouper':'Zusammenführen',
+'Regrouper avec ces pars':'Mit diesen Par zusammenführen',
+'Vérifie les pars ci-dessous : ce sont ceux qui seront conservés pour le parcours regroupé. Les cases en rouge sont celles où les deux versions divergent.':'Prüfe die Par unten: Diese werden für den zusammengeführten Platz übernommen. Rote Felder zeigen Abweichungen zwischen beiden Versionen.',
+'Golf renommé':'Golfplatz umbenannt',
+'Golf supprimé':'Golfplatz gelöscht',
+'Parcours renommé':'Platz umbenannt',
+'Parcours supprimé':'Platz gelöscht',
+'Parcours regroupés':'Plätze zusammengeführt',
+'Parcours terminé':'Platz abgeschlossen',
+'Partie modifiée':'Runde aktualisiert',
+'Partie supprimée':'Runde gelöscht',
+'Hors ligne : synchro différée':'Offline: Synchronisierung verschoben',
+'Image enregistrée':'Bild gespeichert',
+'Image indisponible':'Bild nicht verfügbar',
+'Nom mis à jour':'Name aktualisiert',
+'Changer d\'adresse e-mail':'E-Mail-Adresse ändern',
+'Changer de mot de passe':'Passwort ändern',
+'Mot de passe actuel':'Aktuelles Passwort',
+'Nouveau mot de passe':'Neues Passwort',
+'Confirme le nouveau':'Neues bestätigen',
+'Nouvelle adresse':'Neue Adresse',
+'Vérifie ta nouvelle adresse':'Prüfe deine neue Adresse',
+'Tant que ce n\'est pas fait, continue à te connecter avec ton ancienne adresse.':'Bis dahin melde dich weiterhin mit deiner alten Adresse an.',
+'Adresse e-mail mise à jour':'E-Mail-Adresse aktualisiert',
+'Mot de passe mis à jour':'Passwort aktualisiert',
+'E-mail de réinitialisation envoyé':'Zurücksetzungs-E-Mail gesendet',
+'Ce compte existe déjà':'Dieses Konto existiert bereits',
+'Saisis-le une dernière fois : on associe Google à ce compte, et tu pourras ensuite utiliser l\'un ou l\'autre. Tes parties sont conservées.':'Gib es ein letztes Mal ein: Wir verknüpfen Google mit diesem Konto, danach kannst du beides nutzen. Deine Runden bleiben erhalten.',
+'Associer':'Verknüpfen',
+'Google associé à ton compte':'Google mit deinem Konto verknüpft',
+'Connecte-toi d\'abord':'Melde dich zuerst an',
+'Découvrir Premium':'Premium entdecken',
+'Gérer mon abonnement':'Abo verwalten',
+'S\'abonner':'Abonnieren',
+'J\'ai déjà un abonnement':'Ich habe bereits ein Abo',
+'Abonnement actif':'Abo aktiv',
+'Aucun abonnement sur ce compte':'Kein Abo für dieses Konto',
+'Vérification…':'Wird geprüft…',
+'Paiement pas encore ouvert':'Zahlung noch nicht verfügbar',
+'L\'abonnement n\'est pas encore en service : les Cloud Functions qui gèrent le paiement ne sont pas déployées.':'Das Abo ist noch nicht aktiv: Die Cloud Functions für die Zahlung sind nicht bereitgestellt.',
+'Écris-nous si tu veux être prévenu·e de son ouverture.':'Schreib uns, wenn du benachrichtigt werden möchtest, sobald es verfügbar ist.',
+'Gestion pas encore ouverte':'Verwaltung noch nicht verfügbar',
+'Le portail de gestion de l\'abonnement n\'est pas encore en service.':'Das Portal zur Abo-Verwaltung ist noch nicht aktiv.',
+'Paiement indisponible, réessaie':'Zahlung nicht verfügbar, versuche es erneut',
+'Gestion indisponible, réessaie':'Verwaltung nicht verfügbar, versuche es erneut',
+'Merci !':'Danke!',
+'On active ton abonnement, ça prend quelques secondes…':'Dein Abo wird aktiviert, das dauert einige Sekunden…',
+'Premium activé':'Premium aktiviert',
+'Les statistiques et le partage du récapitulatif sont débloqués sur tous tes appareils.':'Statistiken und das Teilen der Zusammenfassung sind auf allen deinen Geräten freigeschaltet.',
+'Paiement enregistré':'Zahlung erfasst',
+'L\'activation prend parfois une minute. Rouvre l\'app dans un instant, ou utilise « J\'ai déjà un abonnement » depuis l\'écran Premium.':'Die Aktivierung dauert manchmal eine Minute. Öffne die App gleich erneut oder nutze „Ich habe bereits ein Abo“ im Premium-Bereich.',
+'Adresse e-mail invalide.':'Ungültige E-Mail-Adresse.',
+'Aucun compte avec cet e-mail. Si tu es passé·e par Google, utilise « Continuer avec Google ».':'Kein Konto mit dieser E-Mail. Wenn du dich mit Google registriert hast, nutze „Weiter mit Google“.',
+'Mot de passe incorrect.':'Falsches Passwort.',
+'E-mail ou mot de passe incorrect. Si ton compte a été créé avec Google, connecte-toi via « Continuer avec Google ».':'E-Mail oder Passwort falsch. Wenn dein Konto mit Google erstellt wurde, melde dich über „Weiter mit Google“ an.',
+'Un compte existe déjà avec cet e-mail. Connecte-toi, ou utilise « Continuer avec Google ».':'Mit dieser E-Mail existiert bereits ein Konto. Melde dich an oder nutze „Weiter mit Google“.',
+'Mot de passe trop court (6 caractères minimum).':'Passwort zu kurz (mindestens 6 Zeichen).',
+'Trop de tentatives, réessaie plus tard.':'Zu viele Versuche, versuche es später erneut.',
+'Pas de connexion. Vérifie ton réseau.':'Keine Verbindung. Prüfe dein Netzwerk.',
+'Ce mode de connexion n\'est pas activé dans Firebase.':'Diese Anmeldemethode ist in Firebase nicht aktiviert.',
+'La fenêtre Google a été bloquée par le navigateur.':'Das Google-Fenster wurde vom Browser blockiert.',
+'Ce domaine n\'est pas autorisé dans Firebase.':'Diese Domain ist in Firebase nicht zugelassen.',
+'Un compte existe déjà avec cet e-mail, via un autre mode de connexion.':'Mit dieser E-Mail existiert bereits ein Konto über eine andere Anmeldemethode.',
+'Par sécurité, reconnecte-toi avant de modifier ton compte.':'Melde dich aus Sicherheitsgründen erneut an, bevor du dein Konto änderst.',
+'Indique ton mot de passe actuel.':'Gib dein aktuelles Passwort ein.',
+'La nouvelle adresse e-mail est invalide.':'Die neue E-Mail-Adresse ist ungültig.',
+'Une erreur est survenue. Réessaie.':'Ein Fehler ist aufgetreten. Versuche es erneut.',
+'Mesure d\u2019audience':'Nutzungsmessung'
+}
+
+};
+
+/* ================= LANGUES =================
+   Le texte français sert de clé : T('Se connecter') renvoie la
+   traduction si elle existe, et le français sinon. Une traduction
+   manquante ne casse donc jamais l'affichage.
+   Les dictionnaires sont dans LANGS, plus bas.                    */
+const LANGUES=['en','fr','es','de'];
+const LANGUE_DEFAUT='en';   /* langue servie quand celle de l'appareil n'est pas couverte */
+const NOMS_LANGUES={fr:'Français',en:'English',es:'Español',de:'Deutsch'};
+const LOCALES={fr:'fr-FR',en:'en-GB',es:'es-ES',de:'de-DE'};
+
+function langueParDefaut(){
+  try{
+    const choisi=Store.get('lang');
+    if(choisi&&LANGUES.indexOf(choisi)>=0)return choisi;
+  }catch(e){}
+  const n=((navigator.languages&&navigator.languages[0])||navigator.language||LANGUE_DEFAUT).slice(0,2).toLowerCase();
+  return LANGUES.indexOf(n)>=0?n:LANGUE_DEFAUT;
+}
+let LANG=langueParDefaut();
+const LOC=()=>LOCALES[LANG]||LOCALES[LANGUE_DEFAUT];
+/* Politique de confidentialité : version française ou anglaise. */
+const PAGE_POLITIQUE=()=>LANG==='fr'?'confidentialite.html':'privacy.html';
+
+/* Traduit une chaîne. Les variables s'écrivent {nom} dans le texte. */
+function T(fr,vars){
+  const d=(typeof LANGS!=='undefined'&&LANGS[LANG])||null;
+  let s=(d&&d[fr])||fr;
+  if(vars)for(const k in vars)s=s.split('{'+k+'}').join(vars[k]);
+  return s;
+}
+
+/* Parcourt le document et traduit les textes déjà en place.
+   On ignore les scripts, les styles et les zones que le JS remplit
+   lui-même, qui passent par T() à la construction. */
+const ATTRS_TRAD=['placeholder','aria-label','title'];
+function appliquerLangue(){
+  document.documentElement.lang=LANG;
+  if(LANG==='fr')return;              /* rien à traduire */
+  const dico=(typeof LANGS!=='undefined'&&LANGS[LANG])||null;
+  if(!dico)return;
+  const it=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{
+    acceptNode(n){
+      const p=n.parentNode;
+      if(!p||p.nodeName==='SCRIPT'||p.nodeName==='STYLE')return NodeFilter.FILTER_REJECT;
+      return n.nodeValue.trim()?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;
+    }
+  });
+  const lot=[];
+  while(it.nextNode())lot.push(it.currentNode);
+  lot.forEach(n=>{
+    const brut=n.nodeValue, cle=brut.trim();
+    if(dico[cle])n.nodeValue=brut.replace(cle,dico[cle]);
+  });
+  document.querySelectorAll('*').forEach(el=>{
+    ATTRS_TRAD.forEach(a=>{
+      const v=el.getAttribute&&el.getAttribute(a);
+      if(v&&dico[v.trim()])el.setAttribute(a,dico[v.trim()]);
+    });
+  });
+}
+
+function changerLangue(l){
+  if(LANGUES.indexOf(l)<0)return;
+  try{Store.set('lang',l);}catch(e){}
+  location.reload();   /* le plus sûr : tout est reconstruit proprement */
+}
+
 const COLORS=['#2d6a4f','#c9a227','#d62828','#1d5c8a','#7b3fa0','#0e7c7b'];
 
 /* Icônes réutilisées : déclarées ici car refreshResume() s'en sert
@@ -795,7 +1388,7 @@ const BETA={
    n'apparaît. Renseigne l'identifiant G-XXXXXXXXXX pour activer. */
 const ANALYTICS={
   id:'G-25LM3FQQPK',                 /* ex. 'G-AB12CD34EF' */
-  policyUrl:'confidentialite.html'   /* page livrée avec l'app */
+  policyUrl:'auto'   /* page livrée avec l'app */
 };
 
 /* Lien affiché sur l'image de partage et joint au message.
@@ -905,7 +1498,7 @@ async function pushDB(){
   }catch(e){
     console.error('Sync cloud échouée :',e);
     syncPending=true;
-    toast('Hors ligne : synchro différée');
+    toast(T('Hors ligne : synchro différée'));
   }
 }
 async function pullDB(){
@@ -983,7 +1576,7 @@ function fieldsUI(){
 
 $('#fGolf').onclick=()=>{
   const db=loadDB();
-  let html='<h3>Quel golf ?</h3><p class="txt">Choisis un golf enregistré pour retrouver ses parcours et leurs pars.</p><div class="list">'+
+  let html='<h3>'+T('Quel golf ?')+'</h3><p class="txt">'+T('Choisis un golf enregistré pour retrouver ses parcours et leurs pars.')+'</p><div class="list">'+
     '<button data-g="free"><span style="flex:1;min-width:0"><b>Partie libre</b><span>sans rattacher à un golf</span></span></button>';
   db.courses.forEach(c=>{
     const nl=(c.layouts||[]).length;
@@ -991,9 +1584,9 @@ $('#fGolf').onclick=()=>{
       '<span>'+nl+(nl>1?' parcours':' parcours')+' · '+c.rounds.length+(c.rounds.length>1?' parties':' partie')+'</span></span><span style="color:#b7b29c">›</span></button>';
   });
   html+='</div>';
-  if(db.courses.length>=MAXC)html+='<p class="warn">Limite de '+MAXC+' golfs atteinte.</p><div class="row"><button class="btn btn-ghost" id="mCancel">Fermer</button></div>';
+  if(db.courses.length>=MAXC)html+='<p class="warn">Limite de '+MAXC+' golfs atteinte.</p><div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Fermer')+'</button></div>';
   else html+='<div class="sep">ou</div><input id="mName" type="text" maxlength="30" placeholder="Nom d\'un nouveau golf">'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mCreate">Créer</button></div>';
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mCreate">'+T('Créer')+'</button></div>';
   openModal(html);
   $('#mCancel').onclick=closeModal;
   const cr=$('#mCreate');
@@ -1015,7 +1608,7 @@ $('#fLayout').onclick=()=>openLayoutPicker();
 function openLayoutPicker(){
   const c=golfSel&&golfSel.id?loadDB().courses.find(x=>x.id===golfSel.id):null;
   const list=c?(c.layouts||[]):[];
-  let html='<h3>Quel parcours ?</h3><p class="txt">'+(list.length
+  let html='<h3>'+T('Quel parcours ?')+'</h3><p class="txt">'+(list.length
     ?'Choisis un parcours connu pour charger directement ses pars, ou crée-en un nouveau.'
     :'Donne un nom au parcours et son nombre de trous. Les pars seront enregistrés à la fin de la partie.')+'</p>';
   if(list.length){
@@ -1026,11 +1619,11 @@ function openLayoutPicker(){
     }).join('')+'</div><div class="sep">ou</div>';
   }
   html+='<input id="mName" type="text" maxlength="24" placeholder="Nom du parcours (ex. Rouge)">'+
-    '<div class="stepper" style="margin-top:10px"><button class="rnd" id="mHM">−</button>'+
+    '<div class="stepper" style="margin-top:10px"><button class="rnd" id="mHM">'+T('−')+'</button>'+
     '<div class="val"><span id="mHV">'+(layoutSel?layoutSel.holes:nHoles)+'</span><small>trous</small></div>'+
-    '<button class="rnd" id="mHP">+</button></div>'+
+    '<button class="rnd" id="mHP">'+T('+')+'</button></div>'+
     '<div class="chips" style="margin-top:9px">'+[6,9,18,27].map(n=>'<div class="chip" data-hp="'+n+'">'+n+' trous</div>').join('')+'</div>'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mCreate">Valider</button></div>';
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mCreate">'+T('Valider')+'</button></div>';
   openModal(html);
   let hv=layoutSel?layoutSel.holes:nHoles;
   const setH=n=>{hv=Math.min(36,Math.max(1,n));$('#mHV').textContent=hv;
@@ -1078,14 +1671,14 @@ function pickKnownPlayer(i){
   const roster=playerIndex();
   const inputs=[...namesEl.querySelectorAll('input')];
   const used=inputs.map(x=>x.value.trim().toLowerCase());
-  let html='<h3>Joueur '+(i+1)+'</h3><p class="txt">Choisis un joueur déjà suivi pour retrouver ses statistiques, ou ferme et saisis un nouveau nom.</p><div class="list">';
+  let html='<h3>Joueur '+(i+1)+'</h3><p class="txt">'+T('Choisis un joueur déjà suivi pour retrouver ses statistiques, ou ferme et saisis un nouveau nom.')+'</p><div class="list">';
   roster.forEach(p=>{
     const dup=used.includes(p.key)&&used[i]!==p.key;
     html+='<button data-k="'+esc(p.key)+'" data-n="'+esc(p.name)+'"'+(dup?' disabled style="opacity:.4"':'')+'>'+
       '<span style="flex:1;min-width:0"><b>'+esc(p.name)+'</b><span>'+p.n+(p.n>1?' parties':' partie')+
       (dup?' · déjà choisi':'')+'</span></span><span style="color:#b7b29c">›</span></button>';
   });
-  html+='</div><div class="row"><button class="btn btn-ghost" id="mCancel">Fermer</button></div>';
+  html+='</div><div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Fermer')+'</button></div>';
   openModal(html);
   $('#mCancel').onclick=closeModal;
   document.querySelectorAll('#overlay [data-k]').forEach(b=>b.onclick=()=>{
@@ -1258,7 +1851,7 @@ function advance(){
     for(let k=1;k<=n;k++){const j=(S.active+k)%n;if(S.players[j].scores[S.cur]===null){waiting=j;break;}}
     if(waiting>=0){setActive(waiting);return;}
     if(S.cur<S.holes-1){S.active=0;go(S.cur+1);toast('Trou '+(S.cur+1));}
-    else{S.active=0;renderAll();toast('Parcours terminé');}
+    else{S.active=0;renderAll();toast(T('Parcours terminé'));}
   },260);
 }
 
@@ -1371,14 +1964,14 @@ const isRoundComplete=()=>!!S&&S.players.every(p=>p.scores.every(s=>typeof s==='
 const ownerComplete=()=>!!S&&S.players[S.owner||0].scores.every(s=>typeof s==='number');
 
 function askSave(){
-  openModal('<h3>Partie terminée</h3><p class="txt">Tu veux l\'enregistrer pour suivre tes statistiques trou par trou ?</p>'+
-    '<div class="row"><button class="btn btn-ghost" id="mNo">Plus tard</button><button class="btn btn-primary" id="mYes">Enregistrer</button></div>');
+  openModal('<h3>'+T('Partie terminée')+'</h3><p class="txt">'+T('Tu veux l\'enregistrer pour suivre tes statistiques trou par trou ?')+'</p>'+
+    '<div class="row"><button class="btn btn-ghost" id="mNo">'+T('Plus tard')+'</button><button class="btn btn-primary" id="mYes">'+T('Enregistrer')+'</button></div>');
   $('#mNo').onclick=closeModal;
   $('#mYes').onclick=startSave;
 }
 function askIncomplete(){
-  openModal('<h3>Carte incomplète</h3><p class="txt">Il manque des scores. Tu peux quand même l\'enregistrer : les trous vides seront ignorés dans les moyennes.</p>'+
-    '<div class="row"><button class="btn btn-ghost" id="mNo">Retour</button><button class="btn btn-primary" id="mYes">Enregistrer</button></div>');
+  openModal('<h3>'+T('Carte incomplète')+'</h3><p class="txt">'+T('Il manque des scores. Tu peux quand même l\'enregistrer : les trous vides seront ignorés dans les moyennes.')+'</p>'+
+    '<div class="row"><button class="btn btn-ghost" id="mNo">'+T('Retour')+'</button><button class="btn btn-primary" id="mYes">'+T('Enregistrer')+'</button></div>');
   $('#mNo').onclick=closeModal;$('#mYes').onclick=startSave;
 }
 function ownerList(){
@@ -1391,7 +1984,7 @@ function startSave(){
 }
 function pickCourse(){
   const db=loadDB();
-  let html='<h3>Sur quel golf ?</h3><p class="txt">Choisis un golf déjà enregistré, ou crée-le. Ta partie y sera ajoutée en '+S.holes+' trous.</p>';
+  let html='<h3>'+T('Sur quel golf ?')+'</h3><p class="txt">Choisis un golf déjà enregistré, ou crée-le. Ta partie y sera ajoutée en '+S.holes+' trous.</p>';
   if(db.courses.length)html+='<div class="list">'+db.courses.map(c=>{
     const fmts=[...new Set(c.rounds.map(r=>roundHoles(c,r)))].sort((a,b)=>a-b);
     return '<button data-c="'+c.id+'"><span style="flex:1;min-width:0"><b>'+esc(c.name)+'</b>'+
@@ -1399,10 +1992,10 @@ function pickCourse(){
   }).join('')+'</div><div class="sep">ou</div>';
   if(db.courses.length>=MAXC){
     html+='<p class="warn">Limite de '+MAXC+' golfs atteinte. Supprime un golf depuis les statistiques pour en créer un nouveau.</p>'
-      +'<div class="row"><button class="btn btn-ghost" id="mCancel">Fermer</button></div>';
+      +'<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Fermer')+'</button></div>';
   }else{
     html+='<input id="mName" type="text" maxlength="30" placeholder="Nom du golf">'
-      +'<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mCreate">Créer et enregistrer</button></div>';
+      +'<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mCreate">'+T('Créer et enregistrer')+'</button></div>';
   }
   openModal(html);
   $('#mCancel').onclick=closeModal;
@@ -1445,8 +2038,8 @@ function storeRound(courseId,newName,list){
   });
   saveDB(db);
   S.savedTo=c.id;S.courseId=c.id;S.courseName=c.name;S.layoutId=L.id;S.layoutName=L.name;save();
-  openModal('<h3>Partie enregistrée</h3><p class="txt">Ajoutée à <b>'+esc(c.name)+'</b> · '+esc(L.name)+', qui compte maintenant '+c.rounds.length+(c.rounds.length>1?' parties':' partie')+'.</p>'+
-    '<div class="row"><button class="btn btn-ghost" id="mClose">Fermer</button><button class="btn btn-primary" id="mStats">Voir les stats</button></div>');
+  openModal('<h3>'+T('Partie enregistrée')+'</h3><p class="txt">Ajoutée à <b>'+esc(c.name)+'</b> · '+esc(L.name)+', qui compte maintenant '+c.rounds.length+(c.rounds.length>1?' parties':' partie')+'.</p>'+
+    '<div class="row"><button class="btn btn-ghost" id="mClose">'+T('Fermer')+'</button><button class="btn btn-primary" id="mStats">'+T('Voir les stats')+'</button></div>');
   $('#mClose').onclick=()=>{closeModal();refreshRecapButtons();};
   $('#mStats').onclick=()=>{closeModal();openStats(c.id,L.id);};
 }
@@ -1471,7 +2064,7 @@ function playerIndex(){
   }));
   return[...m.values()].sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name));
 }
-function dmy(iso){const d=new Date(iso);return isNaN(d)?'—':d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'});}
+function dmy(iso){const d=new Date(iso);return isNaN(d)?'—':d.toLocaleDateString(LOC(),{day:'2-digit',month:'2-digit',year:'2-digit'});}
 
 function openStats(courseId,layoutId){
   show('stats');
@@ -1676,9 +2269,9 @@ function askDeleteRound(courseId,rid){
   if(!c)return;
   const r=c.rounds.find(x=>(x.id||x.date)===rid);
   if(!r)return;
-  openModal('<h3>Supprimer cette partie ?</h3>'+
+  openModal('<h3>'+T('Supprimer cette partie ?')+'</h3>'+
     '<p class="warn">Partie du '+dmy(r.date)+' sur '+esc(c.name)+'. Elle sera effacée pour tous les joueurs qui y figurent, et cette action est définitive.</p>'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Supprimer</button></div>');
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Supprimer')+'</button></div>');
   $('#mCancel').onclick=closeModal;
   $('#mOk').onclick=()=>{
     const d=loadDB();
@@ -1686,7 +2279,7 @@ function askDeleteRound(courseId,rid){
     if(cc)cc.rounds=cc.rounds.filter(x=>(x.id||x.date)!==rid);
     saveDB(d);closeModal();
     openStats($('#stCourse').value==='all'?null:$('#stCourse').value);
-    toast('Partie supprimée');
+    toast(T('Partie supprimée'));
   };
 }
 
@@ -1726,8 +2319,8 @@ $('#btnRenameCourse').onclick=()=>{
   askRenameCourse(cid,c.name);
 };
 function askRenameCourse(cid,val){
-  openModal('<h3>Renommer le golf</h3><input id="mName" type="text" maxlength="30" value="'+esc(val)+'">'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Renommer</button></div>');
+  openModal('<h3>'+T('Renommer le golf')+'</h3><input id="mName" type="text" maxlength="30" value="'+esc(val)+'">'+
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Renommer')+'</button></div>');
   $('#mCancel').onclick=closeModal;$('#mName').focus();$('#mName').select();
   $('#mOk').onclick=()=>{
     const v=$('#mName').value.trim();if(!v){$('#mName').focus();return;}
@@ -1736,7 +2329,7 @@ function askRenameCourse(cid,val){
     if(twin){askMergeCourses(cid,twin.id,v);return;}
     cc.name=v;saveDB(db);
     if(S&&S.courseId===cid)S.courseName=v,save();
-    closeModal();openStats(cid);toast('Golf renommé');
+    closeModal();openStats(cid);toast(T('Golf renommé'));
   };
 }
 function askMergeCourses(fromId,toId,name){
@@ -1744,11 +2337,11 @@ function askMergeCourses(fromId,toId,name){
   const A=db.courses.find(x=>x.id===fromId),B=db.courses.find(x=>x.id===toId);
   if(!A||!B){closeModal();return;}
   const nA=A.rounds.length,nB=B.rounds.length;
-  openModal('<h3>Ce golf existe déjà</h3>'+
+  openModal('<h3>'+T('Ce golf existe déjà')+'</h3>'+
     '<p class="txt">Un golf <b>'+esc(B.name)+'</b> est déjà enregistré ('+nB+(nB>1?' parties':' partie')+').</p>'+
     '<p class="txt">Tu peux regrouper les deux : les '+nA+(nA>1?' parties':' partie')+' de « '+esc(A.name)+' » seront déplacées dedans. '+
     'Les parcours qui portent le même nom, le même nombre de trous et les mêmes pars sont réunis ; les autres sont conservés à part, tu pourras les fusionner ensuite.</p>'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Choisir un autre nom</button><button class="btn btn-primary" id="mOk">Regrouper</button></div>');
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Choisir un autre nom')+'</button><button class="btn btn-primary" id="mOk">'+T('Regrouper')+'</button></div>');
   $('#mCancel').onclick=()=>askRenameCourse(fromId,name);
   $('#mOk').onclick=()=>mergeCourses(fromId,toId);
 }
@@ -1785,11 +2378,11 @@ $('#btnDelCourse2').onclick=()=>{
   const c=loadDB().courses.find(x=>x.id===cid);if(!c)return;
   openModal('<h3>Supprimer '+esc(c.name)+' ?</h3>'+
     '<p class="warn">Ce golf, ses '+(c.layouts||[]).length+' parcours et ses '+c.rounds.length+(c.rounds.length>1?' parties':' partie')+' seront effacés. Action définitive.</p>'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Supprimer</button></div>');
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Supprimer')+'</button></div>');
   $('#mCancel').onclick=closeModal;
   $('#mOk').onclick=()=>{
     const db=loadDB();db.courses=db.courses.filter(x=>x.id!==cid);saveDB(db);
-    closeModal();openStats(null);toast('Golf supprimé');
+    closeModal();openStats(null);toast(T('Golf supprimé'));
   };
 };
 
@@ -1799,8 +2392,8 @@ $('#btnRenameLayout').onclick=()=>{
   askRenameLayout(cid,lid,L.name);
 };
 function askRenameLayout(cid,lid,val){
-  openModal('<h3>Renommer le parcours</h3><input id="mName" type="text" maxlength="24" value="'+esc(val)+'">'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Renommer</button></div>');
+  openModal('<h3>'+T('Renommer le parcours')+'</h3><input id="mName" type="text" maxlength="24" value="'+esc(val)+'">'+
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Renommer')+'</button></div>');
   $('#mCancel').onclick=closeModal;$('#mName').focus();$('#mName').select();
   $('#mOk').onclick=()=>{
     const v=$('#mName').value.trim();if(!v){$('#mName').focus();return;}
@@ -1810,7 +2403,7 @@ function askRenameLayout(cid,lid,val){
     if(twin){askMergeLayouts(cid,lid,twin.id,v);return;}
     LL.name=v;LL.auto=false;saveDB(db);
     if(S&&S.layoutId===lid)S.layoutName=v,save();
-    closeModal();openStats(cid,lid);toast('Parcours renommé');
+    closeModal();openStats(cid,lid);toast(T('Parcours renommé'));
   };
 }
 
@@ -1825,10 +2418,10 @@ function askMergeLayouts(cid,fromId,toId,name){
   const nB=c.rounds.filter(r=>r.layoutId===toId).length;
 
   if(A.holes!==B.holes){
-    openModal('<h3>Ce nom est déjà pris</h3>'+
+    openModal('<h3>'+T('Ce nom est déjà pris')+'</h3>'+
       '<p class="txt">« '+esc(B.name)+' » existe déjà sur '+esc(c.name)+', mais en <b>'+B.holes+' trous</b> alors que celui-ci en compte <b>'+A.holes+'</b>.</p>'+
       '<p class="warn">Impossible de les regrouper : choisis un autre nom pour les distinguer.</p>'+
-      '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Choisir un autre nom</button></div>');
+      '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Choisir un autre nom')+'</button></div>');
     $('#mCancel').onclick=closeModal;
     $('#mOk').onclick=()=>askRenameLayout(cid,fromId,name);
     return;
@@ -1838,21 +2431,21 @@ function askMergeLayouts(cid,fromId,toId,name){
   const compte=n=>n+(n>1?' parties':' partie');
 
   if(sameArr(pA,pB)){
-    openModal('<h3>Ce parcours existe déjà</h3>'+
+    openModal('<h3>'+T('Ce parcours existe déjà')+'</h3>'+
       '<p class="txt">« '+esc(B.name)+' » est déjà enregistré sur '+esc(c.name)+' en '+B.holes+' trous, <b>avec exactement les mêmes pars</b>.</p>'+
       '<p class="txt">Les '+compte(nA)+' de ce parcours seront ajoutées aux '+compte(nB)+' de « '+esc(B.name)+' ».</p>'+
-      '<div class="row"><button class="btn btn-ghost" id="mCancel">Choisir un autre nom</button><button class="btn btn-primary" id="mOk">Regrouper</button></div>');
+      '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Choisir un autre nom')+'</button><button class="btn btn-primary" id="mOk">'+T('Regrouper')+'</button></div>');
     $('#mCancel').onclick=()=>askRenameLayout(cid,fromId,name);
     $('#mOk').onclick=()=>mergeLayouts(cid,fromId,toId,null);
     return;
   }
 
   const nDiff=pA.reduce((a,v,i)=>a+(v===pB[i]?0:1),0);
-  openModal('<h3>Pars différents</h3>'+
+  openModal('<h3>'+T('Pars différents')+'</h3>'+
     '<p class="txt">« '+esc(B.name)+' » existe déjà sur '+esc(c.name)+' ('+compte(nB)+'), mais <b>'+nDiff+(nDiff>1?' trous ont':' trou a')+' un par différent</b>.</p>'+
-    '<p class="txt">Vérifie les pars ci-dessous : ce sont ceux qui seront conservés pour le parcours regroupé. Les cases en rouge sont celles où les deux versions divergent.</p>'+
+    '<p class="txt">'+T('Vérifie les pars ci-dessous : ce sont ceux qui seront conservés pour le parcours regroupé. Les cases en rouge sont celles où les deux versions divergent.')+'</p>'+
     parsGridHTML(pA,pB)+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Choisir un autre nom</button><button class="btn btn-primary" id="mOk">Regrouper avec ces pars</button></div>');
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Choisir un autre nom')+'</button><button class="btn btn-primary" id="mOk">'+T('Regrouper avec ces pars')+'</button></div>');
   $('#mCancel').onclick=()=>askRenameLayout(cid,fromId,name);
   $('#mOk').onclick=()=>mergeLayouts(cid,fromId,toId,readPars(A.holes,pA));
 }
@@ -1866,7 +2459,7 @@ function mergeLayouts(cid,fromId,toId,pars){
   c.layouts=c.layouts.filter(l=>l.id!==fromId);
   saveDB(db);
   if(S&&S.layoutId===fromId){S.layoutId=toId;S.layoutName=B.name;save();}
-  closeModal();openStats(cid,toId);toast('Parcours regroupés');
+  closeModal();openStats(cid,toId);toast(T('Parcours regroupés'));
 }
 
 /* ---------- modifier une partie déjà enregistrée ---------- */
@@ -1879,7 +2472,7 @@ function openEditRound(courseId,rid){
   const pars=Array.from({length:H},(_,i)=>(r.pars&&r.pars[i])||4);
   const sc=Array.from({length:H},(_,i)=>typeof p.scores[i]==='number'?p.scores[i]:'');
 
-  openModal('<h3>Modifier la partie</h3>'+
+  openModal('<h3>'+T('Modifier la partie')+'</h3>'+
     '<p class="txt">'+esc(c.name)+(L?' · '+esc(L.name):'')+' · '+H+' trous.</p>'+
     '<p class="note" style="font-size:.72rem;color:#8b8770;margin-top:8px;line-height:1.4">Pour chaque trou : le par à gauche, ton score à droite. Laisse le score vide si le trou n\'a pas été joué.</p>'+
     '<input id="eDate" type="date" value="'+isoDay(r.date)+'">'+
@@ -1889,8 +2482,8 @@ function openEditRound(courseId,rid){
       '<input type="number" inputmode="numeric" min="1" max="20" data-esc="'+i+'" value="'+sc[i]+'">'+
       '</div></div>').join('')+'</div>'+
     (L?'<label class="optline"><input type="checkbox" id="eApply"><span>Appliquer ces pars au parcours « '+esc(L.name)+' »</span></label>':'')+
-    '<button class="btn btn-ghost" id="eDel" style="margin-top:12px;color:var(--bad);border-color:#e8cfcc">Supprimer cette partie</button>'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Enregistrer</button></div>');
+    '<button class="btn btn-ghost" id="eDel" style="margin-top:12px;color:var(--bad);border-color:#e8cfcc">'+T('Supprimer cette partie')+'</button>'+
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Enregistrer')+'</button></div>');
 
   $('#mCancel').onclick=closeModal;
   $('#eDel').onclick=()=>{closeModal();askDeleteRound(courseId,rid);};
@@ -1924,7 +2517,7 @@ function openEditRound(courseId,rid){
       if(LL&&LL.holes===H)LL.pars=np.slice();
     }
     saveDB(d2);closeModal();
-    openStats(courseId,rr.layoutId);toast('Partie modifiée');
+    openStats(courseId,rr.layoutId);toast(T('Partie modifiée'));
   };
 }
 $('#btnDelLayout').onclick=()=>{
@@ -1933,12 +2526,12 @@ $('#btnDelLayout').onclick=()=>{
   const nb=c.rounds.filter(r=>r.layoutId===lid).length;
   openModal('<h3>Supprimer '+esc(L.name)+' ?</h3>'+
     '<p class="warn">Ce parcours'+(nb?' et ses '+nb+(nb>1?' parties':' partie'):'')+' seront effacés. Action définitive.</p>'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Supprimer</button></div>');
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Supprimer')+'</button></div>');
   $('#mCancel').onclick=closeModal;
   $('#mOk').onclick=()=>{
     const db=loadDB();const cc=db.courses.find(x=>x.id===cid);
     if(cc){cc.layouts=cc.layouts.filter(l=>l.id!==lid);cc.rounds=cc.rounds.filter(r=>r.layoutId!==lid);}
-    saveDB(db);closeModal();openStats(cid);toast('Parcours supprimé');
+    saveDB(db);closeModal();openStats(cid);toast(T('Parcours supprimé'));
   };
 };
 
@@ -2023,7 +2616,7 @@ async function recapBlob(){
 
   const done=S.pars.map((_,h)=>players.every(p=>typeof p.scores[h]==='number')).filter(Boolean).length;
   const dt=new Date(S.started||Date.now());
-  const dateTxt=isNaN(dt)?'':dt.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  const dateTxt=isNaN(dt)?'':dt.toLocaleDateString(LOC(),{day:'numeric',month:'long',year:'numeric'});
   const holesTxt=NH+' trous · par '+parTot();
   const bits=[];
   /* On n'affiche le nom du parcours que s'il apporte quelque chose. */
@@ -2137,7 +2730,7 @@ async function shareRecap(){
   const btn=$('#btnShare');btn.classList.add('loading');
   try{
     const blob=await recapBlob();
-    if(!blob){toast('Image indisponible');return;}
+    if(!blob){toast(T('Image indisponible'));return;}
     const file=new File([blob],'carte-golf.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
       /* L'image se suffit à elle-même : elle porte déjà le nom de l'app
@@ -2147,7 +2740,7 @@ async function shareRecap(){
       const url=URL.createObjectURL(blob);
       const a=document.createElement('a');a.href=url;a.download='carte-golf.png';document.body.appendChild(a);a.click();a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),4000);
-      toast('Image enregistrée');
+      toast(T('Image enregistrée'));
     }
   }catch(e){ if(!e||e.name!=='AbortError')toast("Partage impossible"); }
   finally{ btn.classList.remove('loading'); }
@@ -2212,29 +2805,29 @@ function openPaywall(origin){
       '<div class="price">'+esc(PREMIUM.price)+'</div>'+
       '<p class="pnote">'+esc(PREMIUM.note)+'</p>'+
     '</div>'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Plus tard</button><button class="btn btn-primary" id="mGo">S\'abonner</button></div>'+
-    '<button class="authlink" id="mRestore">J\'ai déjà un abonnement</button>'+
-    '<p class="modpriv"><a href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>');
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Plus tard')+'</button><button class="btn btn-primary" id="mGo">'+T('S\'abonner')+'</button></div>'+
+    '<button class="authlink" id="mRestore">'+T('J\'ai déjà un abonnement')+'</button>'+
+    '<p class="modpriv"><a href="'+PAGE_POLITIQUE()+'" target="_blank" rel="noopener">'+T('Politique de confidentialité')+'</a></p>');
   $('#mCancel').onclick=closeModal;
   $('#mGo').onclick=startCheckout;
   $('#mRestore').onclick=async()=>{
-    toast('Vérification…');
+    toast(T('Vérification…'));
     await pullPremium();refreshPremiumUI();
-    if(isPremium()){closeModal();toast('Abonnement actif');}
-    else toast('Aucun abonnement sur ce compte');
+    if(isPremium()){closeModal();toast(T('Abonnement actif'));}
+    else toast(T('Aucun abonnement sur ce compte'));
   };
 }
 
 async function startCheckout(){
   if(!PREMIUM.checkoutUrl){
-    openModal('<h3>Paiement pas encore ouvert</h3>'+
-      '<p class="txt">L\'abonnement n\'est pas encore en service : les Cloud Functions qui gèrent le paiement ne sont pas déployées.</p>'+
-      '<p class="txt">Écris-nous si tu veux être prévenu·e de son ouverture.</p>'+
-      '<div class="row"><button class="btn btn-primary" id="mOk">Compris</button></div>');
+    openModal('<h3>'+T('Paiement pas encore ouvert')+'</h3>'+
+      '<p class="txt">'+T('L\'abonnement n\'est pas encore en service : les Cloud Functions qui gèrent le paiement ne sont pas déployées.')+'</p>'+
+      '<p class="txt">'+T('Écris-nous si tu veux être prévenu·e de son ouverture.')+'</p>'+
+      '<div class="row"><button class="btn btn-primary" id="mOk">'+T('Compris')+'</button></div>');
     $('#mOk').onclick=closeModal;
     return;
   }
-  if(!currentUser){toast('Connecte-toi d\'abord');return;}
+  if(!currentUser){toast(T("Connecte-toi d'abord"));return;}
   const btn=$('#mGo');
   if(btn){btn.classList.add('loading');btn.textContent='Un instant…';}
   try{
@@ -2250,15 +2843,15 @@ async function startCheckout(){
   }catch(e){
     console.error('Checkout impossible :',e);
     if(btn){btn.classList.remove('loading');btn.textContent='S\'abonner';}
-    toast('Paiement indisponible, réessaie');
+    toast(T('Paiement indisponible, réessaie'));
   }
 }
 
 async function openPortal(){
   if(!PREMIUM.portalUrl||!currentUser){
-    openModal('<h3>Gestion pas encore ouverte</h3>'+
-      '<p class="txt">Le portail de gestion de l\'abonnement n\'est pas encore en service.</p>'+
-      '<div class="row"><button class="btn btn-primary" id="mOk">Compris</button></div>');
+    openModal('<h3>'+T('Gestion pas encore ouverte')+'</h3>'+
+      '<p class="txt">'+T('Le portail de gestion de l\'abonnement n\'est pas encore en service.')+'</p>'+
+      '<div class="row"><button class="btn btn-primary" id="mOk">'+T('Compris')+'</button></div>');
     $('#mOk').onclick=closeModal;
     return;
   }
@@ -2271,7 +2864,7 @@ async function openPortal(){
     });
     const data=await res.json();
     if(data&&data.url)location.href=data.url;else throw new Error('réponse inattendue');
-  }catch(e){console.error(e);toast('Gestion indisponible, réessaie');}
+  }catch(e){console.error(e);toast(T('Gestion indisponible, réessaie'));}
 }
 
 /* Retour depuis Stripe : le webhook peut mettre quelques secondes,
@@ -2279,17 +2872,17 @@ async function openPortal(){
 async function afterCheckout(){
   if(location.search.indexOf('checkout=success')<0)return;
   history.replaceState({},'',location.pathname);
-  openModal('<h3>Merci !</h3><p class="txt">On active ton abonnement, ça prend quelques secondes…</p>');
+  openModal('<h3>'+T('Merci !')+'</h3><p class="txt">'+T('On active ton abonnement, ça prend quelques secondes…')+'</p>');
   for(let i=0;i<6;i++){
     await pullPremium();
     if(isPremium())break;
     await new Promise(r=>setTimeout(r,2000));
   }
   refreshPremiumUI();refreshStatsCard();
-  if(isPremium())openModal('<h3>Premium activé</h3><p class="txt">Les statistiques et le partage du récapitulatif sont débloqués sur tous tes appareils.</p>'+
-    '<div class="row"><button class="btn btn-primary" id="mOk">Parfait</button></div>');
-  else openModal('<h3>Paiement enregistré</h3><p class="txt">L\'activation prend parfois une minute. Rouvre l\'app dans un instant, ou utilise « J\'ai déjà un abonnement » depuis l\'écran Premium.</p>'+
-    '<div class="row"><button class="btn btn-primary" id="mOk">Compris</button></div>');
+  if(isPremium())openModal('<h3>'+T('Premium activé')+'</h3><p class="txt">'+T('Les statistiques et le partage du récapitulatif sont débloqués sur tous tes appareils.')+'</p>'+
+    '<div class="row"><button class="btn btn-primary" id="mOk">'+T('Parfait')+'</button></div>');
+  else openModal('<h3>'+T('Paiement enregistré')+'</h3><p class="txt">'+T('L\'activation prend parfois une minute. Rouvre l\'app dans un instant, ou utilise « J\'ai déjà un abonnement » depuis l\'écran Premium.')+'</p>'+
+    '<div class="row"><button class="btn btn-primary" id="mOk">'+T('Compris')+'</button></div>');
   const ok=$('#mOk');if(ok)ok.onclick=closeModal;
 }
 
@@ -2328,22 +2921,22 @@ function enterApp(){
 }
 
 const authMsg=code=>({
-  'auth/invalid-email':"Adresse e-mail invalide.",
-  'auth/user-not-found':"Aucun compte avec cet e-mail. Si tu es passé·e par Google, utilise « Continuer avec Google ».",
-  'auth/wrong-password':"Mot de passe incorrect.",
-  'auth/invalid-credential':"E-mail ou mot de passe incorrect. Si ton compte a été créé avec Google, connecte-toi via « Continuer avec Google ».",
-  'auth/email-already-in-use':"Un compte existe déjà avec cet e-mail. Connecte-toi, ou utilise « Continuer avec Google ».",
-  'auth/weak-password':"Mot de passe trop court (6 caractères minimum).",
-  'auth/too-many-requests':"Trop de tentatives, réessaie plus tard.",
-  'auth/network-request-failed':"Pas de connexion. Vérifie ton réseau.",
-  'auth/operation-not-allowed':"Ce mode de connexion n'est pas activé dans Firebase.",
-  'auth/popup-blocked':"La fenêtre Google a été bloquée par le navigateur.",
-  'auth/unauthorized-domain':"Ce domaine n'est pas autorisé dans Firebase.",
-  'auth/account-exists-with-different-credential':"Un compte existe déjà avec cet e-mail, via un autre mode de connexion.",
-  'auth/requires-recent-login':"Par sécurité, reconnecte-toi avant de modifier ton compte.",
-  'auth/missing-password':"Indique ton mot de passe actuel.",
-  'auth/invalid-new-email':"La nouvelle adresse e-mail est invalide."
-}[code]||"Une erreur est survenue. Réessaie.");
+  'auth/invalid-email':T("Adresse e-mail invalide."),
+  'auth/user-not-found':T("Aucun compte avec cet e-mail. Si tu es passé·e par Google, utilise « Continuer avec Google »."),
+  'auth/wrong-password':T("Mot de passe incorrect."),
+  'auth/invalid-credential':T("E-mail ou mot de passe incorrect. Si ton compte a été créé avec Google, connecte-toi via « Continuer avec Google »."),
+  'auth/email-already-in-use':T("Un compte existe déjà avec cet e-mail. Connecte-toi, ou utilise « Continuer avec Google »."),
+  'auth/weak-password':T("Mot de passe trop court (6 caractères minimum)."),
+  'auth/too-many-requests':T("Trop de tentatives, réessaie plus tard."),
+  'auth/network-request-failed':T("Pas de connexion. Vérifie ton réseau."),
+  'auth/operation-not-allowed':T("Ce mode de connexion n'est pas activé dans Firebase."),
+  'auth/popup-blocked':T("La fenêtre Google a été bloquée par le navigateur."),
+  'auth/unauthorized-domain':T("Ce domaine n'est pas autorisé dans Firebase."),
+  'auth/account-exists-with-different-credential':T("Un compte existe déjà avec cet e-mail, via un autre mode de connexion."),
+  'auth/requires-recent-login':T("Par sécurité, reconnecte-toi avant de modifier ton compte."),
+  'auth/missing-password':T("Indique ton mot de passe actuel."),
+  'auth/invalid-new-email':T("La nouvelle adresse e-mail est invalide.")
+}[code]||T("Une erreur est survenue. Réessaie."));
 
 $('#btnAuth').onclick=async()=>{
   if(configMissing)return;
@@ -2401,12 +2994,12 @@ function linkGoogleToExisting(err){
   const email=err.email||(err.customData&&err.customData.email)||'';
   const pending=err.credential;
   if(!pending){authError(authMsg(err.code));return;}
-  openModal('<h3>Ce compte existe déjà</h3>'+
+  openModal('<h3>'+T('Ce compte existe déjà')+'</h3>'+
     '<p class="txt">Un compte est déjà enregistré avec <b>'+esc(email)+'</b> et un mot de passe.</p>'+
-    '<p class="txt">Saisis-le une dernière fois : on associe Google à ce compte, et tu pourras ensuite utiliser l\'un ou l\'autre. Tes parties sont conservées.</p>'+
+    '<p class="txt">'+T('Saisis-le une dernière fois : on associe Google à ce compte, et tu pourras ensuite utiliser l\'un ou l\'autre. Tes parties sont conservées.')+'</p>'+
     '<input id="lgPass" type="password" autocomplete="current-password" placeholder="Ton mot de passe">'+
     '<div class="autherr hidden" id="lgErr" style="margin-top:12px"></div>'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Associer</button></div>');
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Associer')+'</button></div>');
   $('#mCancel').onclick=closeModal;
   const shout=m=>{const e=$('#lgErr');e.textContent=m;e.classList.remove('hidden');};
   $('#mOk').onclick=async()=>{
@@ -2417,7 +3010,7 @@ function linkGoogleToExisting(err){
       const res=await auth.signInWithEmailAndPassword(email,pass);
       try{await res.user.linkWithCredential(pending);}
       catch(e2){if(e2.code!=='auth/provider-already-linked')throw e2;}
-      closeModal();toast('Google associé à ton compte');
+      closeModal();toast(T('Google associé à ton compte'));
     }catch(e){
       b.classList.remove('loading');b.textContent='Associer';
       shout(authMsg(e.code));
@@ -2429,7 +3022,7 @@ $('#btnReset').onclick=async()=>{
   if(configMissing)return;
   const email=$('#auEmail').value.trim();
   if(!email){authError("Entre d'abord ton e-mail, puis reclique sur « Mot de passe oublié ».");return;}
-  try{await auth.sendPasswordResetEmail(email);authError('');toast('E-mail de réinitialisation envoyé');}
+  try{await auth.sendPasswordResetEmail(email);authError('');toast(T('E-mail de réinitialisation envoyé'));}
   catch(e){authError(authMsg(e.code));}
 };
 
@@ -2445,14 +3038,14 @@ async function reauth(pass){
 }
 function openChangeEmail(){
   if(!currentUser)return;
-  openModal('<h3>Changer d\'adresse e-mail</h3>'+
+  openModal('<h3>'+T('Changer d\'adresse e-mail')+'</h3>'+
     '<p class="txt">Adresse actuelle : <b>'+esc(currentUser.email)+'</b></p>'+
-    '<label class="flabel" style="margin:16px 0 0">Mot de passe actuel</label>'+
+    '<label class="flabel" style="margin:16px 0 0">'+T('Mot de passe actuel')+'</label>'+
     '<input id="cePass" type="password" autocomplete="current-password" placeholder="Pour confirmer que c\'est bien toi">'+
-    '<label class="flabel" style="margin:14px 0 0">Nouvelle adresse</label>'+
+    '<label class="flabel" style="margin:14px 0 0">'+T('Nouvelle adresse')+'</label>'+
     '<input id="ceMail" type="email" inputmode="email" autocomplete="email" placeholder="nouvelle@exemple.fr">'+
     '<div class="autherr hidden" id="ceErr" style="margin-top:12px"></div>'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Continuer</button></div>');
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Continuer')+'</button></div>');
   $('#mCancel').onclick=closeModal;
   const err=m=>{const e=$('#ceErr');e.textContent=m;e.classList.remove('hidden');};
   $('#mOk').onclick=async()=>{
@@ -2468,14 +3061,14 @@ function openChangeEmail(){
       if(typeof currentUser.verifyBeforeUpdateEmail==='function'){
         await currentUser.verifyBeforeUpdateEmail(mail);
         closeModal();
-        openModal('<h3>Vérifie ta nouvelle adresse</h3>'+
+        openModal('<h3>'+T('Vérifie ta nouvelle adresse')+'</h3>'+
           '<p class="txt">Un e-mail vient d\'être envoyé à <b>'+esc(mail)+'</b>. Clique sur le lien qu\'il contient pour valider le changement.</p>'+
-          '<p class="txt">Tant que ce n\'est pas fait, continue à te connecter avec ton ancienne adresse.</p>'+
-          '<div class="row"><button class="btn btn-primary" id="mOk2">Compris</button></div>');
+          '<p class="txt">'+T('Tant que ce n\'est pas fait, continue à te connecter avec ton ancienne adresse.')+'</p>'+
+          '<div class="row"><button class="btn btn-primary" id="mOk2">'+T('Compris')+'</button></div>');
         $('#mOk2').onclick=closeModal;
       }else{
         await currentUser.updateEmail(mail);
-        closeModal();toast('Adresse e-mail mise à jour');
+        closeModal();toast(T('Adresse e-mail mise à jour'));
       }
     }catch(e){
       b.classList.remove('loading');b.textContent='Continuer';
@@ -2485,15 +3078,15 @@ function openChangeEmail(){
 }
 function openChangePass(){
   if(!currentUser)return;
-  openModal('<h3>Changer de mot de passe</h3>'+
-    '<label class="flabel" style="margin:6px 0 0">Mot de passe actuel</label>'+
+  openModal('<h3>'+T('Changer de mot de passe')+'</h3>'+
+    '<label class="flabel" style="margin:6px 0 0">'+T('Mot de passe actuel')+'</label>'+
     '<input id="cpOld" type="password" autocomplete="current-password">'+
-    '<label class="flabel" style="margin:14px 0 0">Nouveau mot de passe</label>'+
+    '<label class="flabel" style="margin:14px 0 0">'+T('Nouveau mot de passe')+'</label>'+
     '<input id="cpNew" type="password" autocomplete="new-password" placeholder="Au moins 6 caractères">'+
-    '<label class="flabel" style="margin:14px 0 0">Confirme le nouveau</label>'+
+    '<label class="flabel" style="margin:14px 0 0">'+T('Confirme le nouveau')+'</label>'+
     '<input id="cpNew2" type="password" autocomplete="new-password">'+
     '<div class="autherr hidden" id="cpErr" style="margin-top:12px"></div>'+
-    '<div class="row"><button class="btn btn-ghost" id="mCancel">Annuler</button><button class="btn btn-primary" id="mOk">Enregistrer</button></div>');
+    '<div class="row"><button class="btn btn-ghost" id="mCancel">'+T('Annuler')+'</button><button class="btn btn-primary" id="mOk">'+T('Enregistrer')+'</button></div>');
   $('#mCancel').onclick=closeModal;
   const err=m=>{const e=$('#cpErr');e.textContent=m;e.classList.remove('hidden');};
   $('#mOk').onclick=async()=>{
@@ -2506,7 +3099,7 @@ function openChangePass(){
     try{
       await reauth(old);
       await currentUser.updatePassword(n1);
-      closeModal();toast('Mot de passe mis à jour');
+      closeModal();toast(T('Mot de passe mis à jour'));
     }catch(e){
       b.classList.remove('loading');b.textContent='Enregistrer';
       err(authMsg(e.code));
@@ -2525,27 +3118,30 @@ $('#btnAccount').onclick=()=>{
     abo='<div class="subline on"><b>Accès bêta-testeur</b><span>Accès complet conservé, sans abonnement. Merci d\'avoir été là au début.</span></div>';
   }else if(ok){
     abo='<div class="subline on"><b>'+esc(PREMIUM.name)+'</b><span>'+(premium.status==='trialing'?'Période d\'essai':'Abonnement actif')+jusqu+'</span></div>'
-       +(PREMIUM.portalUrl?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">Gérer mon abonnement</button>':'');
+       +(PREMIUM.portalUrl?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">'+T('Gérer mon abonnement')+'</button>':'');
   }else{
     abo='<div class="subline"><b>Offre gratuite</b><span>Statistiques détaillées verrouillées</span></div>'
-       +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">Découvrir Premium</button>';
+       +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">'+T('Découvrir Premium')+'</button>';
   }
   const byPass=hasPasswordProvider();
-  openModal('<h3>Mon compte</h3>'+
+  openModal('<h3>'+T('Mon compte')+'</h3>'+
     '<p class="txt">Connecté·e en tant que <b>'+esc(currentUser?currentUser.email:'')+'</b>'+
       (byPass?'':' <span class="propill">Google</span>')+'.</p>'+
     abo+
     '<input id="mName" type="text" maxlength="14" value="'+esc(profileName)+'" placeholder="Ton nom (joueur 1)">'+
+    '<label class="flabel" style="margin:16px 0 0">'+T('Langue')+'</label>'+
+    '<select id="mLang">'+LANGUES.map(l=>'<option value="'+l+'"'+(l===LANG?' selected':'')+'>'+NOMS_LANGUES[l]+'</option>').join('')+'</select>'+
     '<div class="accbtns">'+
       (byPass
-        ? '<button class="btn btn-ghost" id="mEmail">Changer d\'adresse e-mail</button>'+
-          '<button class="btn btn-ghost" id="mPass">Changer de mot de passe</button>'
+        ? '<button class="btn btn-ghost" id="mEmail">'+T('Changer d\'adresse e-mail')+'</button>'+
+          '<button class="btn btn-ghost" id="mPass">'+T('Changer de mot de passe')+'</button>'
         : '<p class="hintsm">Ton compte utilise la connexion Google : l\'adresse e-mail et le mot de passe se gèrent depuis ton compte Google.</p>')+
     '</div>'+
-    '<div class="row"><button class="btn btn-ghost" id="mLogout">Se déconnecter</button><button class="btn btn-primary" id="mOk">Enregistrer</button></div>'+
-    '<p class="modpriv"><a href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>');
+    '<div class="row"><button class="btn btn-ghost" id="mLogout">'+T('Se déconnecter')+'</button><button class="btn btn-primary" id="mOk">'+T('Enregistrer')+'</button></div>'+
+    '<p class="modpriv"><a href="'+PAGE_POLITIQUE()+'" target="_blank" rel="noopener">'+T('Politique de confidentialité')+'</a></p>');
   const up=$('#mUp');if(up)up.onclick=()=>{closeModal();openPaywall('compte');};
   const po=$('#mPortal');if(po)po.onclick=openPortal;
+  const ml=$('#mLang');if(ml)ml.onchange=()=>changerLangue(ml.value);
   const me=$('#mEmail');if(me)me.onclick=openChangeEmail;
   const mp=$('#mPass');if(mp)mp.onclick=openChangePass;
   $('#mOk').onclick=async()=>{
@@ -2553,13 +3149,15 @@ $('#btnAccount').onclick=()=>{
     if(v&&v!==profileName){
       profileName=v;
       if(currentUser){Store.set('pname:'+currentUser.uid,v);try{await currentUser.updateProfile({displayName:v});}catch(e){}}
-      scheduleSync();updateAccountBtn();renderNames();toast('Nom mis à jour');
+      scheduleSync();updateAccountBtn();renderNames();toast(T('Nom mis à jour'));
     }
     closeModal();
   };
   $('#mLogout').onclick=async()=>{closeModal();try{await auth.signOut();}catch(e){}};
 };
 
+appliquerLangue();
+document.querySelectorAll('a.privlink').forEach(a=>a.href=PAGE_POLITIQUE());
 setAuthMode('login');
 if(fbReady){
   /* Retour de la connexion Google par redirection : on ne récupère ici que
@@ -2634,9 +3232,9 @@ function consentBanner(){
   b.className='consent';
   b.innerHTML='<b>Mesure d\'audience</b>'+
     '<p>On aimerait mesurer l\'usage de l\'app pour l\'améliorer.'+
-    (ANALYTICS.policyUrl?' <a href="'+esc(ANALYTICS.policyUrl)+'" target="_blank" rel="noopener">En savoir plus</a>':'')+'</p>'+
-    '<div class="crow"><button class="btn btn-ghost" id="cNo">Refuser</button>'+
-    '<button class="btn btn-primary" id="cYes">Accepter</button></div>';
+    (ANALYTICS.policyUrl?' <a href="'+esc(ANALYTICS.policyUrl==='auto'?PAGE_POLITIQUE():ANALYTICS.policyUrl)+'" target="_blank" rel="noopener">En savoir plus</a>':'')+'</p>'+
+    '<div class="crow"><button class="btn btn-ghost" id="cNo">'+T('Refuser')+'</button>'+
+    '<button class="btn btn-primary" id="cYes">'+T('Accepter')+'</button></div>';
   document.body.appendChild(b);
   requestAnimationFrame(()=>b.classList.add('on'));
   const ferme=v=>{
