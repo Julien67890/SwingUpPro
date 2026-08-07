@@ -380,6 +380,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
   background:var(--cream);border:1.5px solid #ddd6c0;border-radius:6px;box-shadow:0 18px 40px -14px rgba(19,54,31,.45);
   padding:16px 17px;max-width:460px;margin:0 auto;transform:translateY(130%);transition:transform .35s cubic-bezier(.2,.7,.3,1)}
 .consent.on{transform:none}
+.consent b{display:block;font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:1rem;color:var(--green-deep);margin-bottom:4px}
 .consent p{font-size:.84rem;color:#5a5848;line-height:1.45}
 .consent a{color:var(--green-mid);font-weight:600}
 .consent .crow{display:flex;gap:8px;margin-top:13px}
@@ -2095,6 +2096,14 @@ async function recapBlob(){
   ctx.font='500 15px '+O;ctx.fillStyle='#8b8770';
   ctx.fillText(SHARE_LINK.url?SHARE_LINK.label+' · '+SHARE_LINK.url:SHARE_LINK.label,W/2,sigY);
 
+  /* Angles arrondis : on ne conserve que les pixels situés dans la forme,
+     comme les cartes de l'app. Les coins deviennent transparents. */
+  ctx.globalCompositeOperation='destination-in';
+  ctx.fillStyle='#000';
+  roundRect(ctx,0,0,W,HT,22);
+  ctx.fill();
+  ctx.globalCompositeOperation='source-over';
+
   return await new Promise(res=>cvs.toBlob(res,'image/png',0.95));
 }
 
@@ -2105,9 +2114,9 @@ async function shareRecap(){
     if(!blob){toast('Image indisponible');return;}
     const file=new File([blob],'carte-golf.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
-      const promo=SHARE_LINK.url?'\n\n'+SHARE_LINK.label+' : '+SHARE_LINK.url:'\n\n'+SHARE_LINK.label;
-      await navigator.share({files:[file],title:'SwingUp',
-        text:(S.courseName?S.courseName+' — ':'')+'ma carte de score au golf'+promo});
+      /* L'image se suffit à elle-même : elle porte déjà le nom de l'app
+         et le lien. Pas de texte joint, qui alourdit le message. */
+      await navigator.share({files:[file],title:'SwingUp'});
     }else{
       const url=URL.createObjectURL(blob);
       const a=document.createElement('a');a.href=url;a.download='carte-golf.png';document.body.appendChild(a);a.click();a.remove();
@@ -2597,8 +2606,8 @@ function consentBanner(){
 
   const b=document.createElement('div');
   b.className='consent';
-  b.innerHTML='<p>On aimerait mesurer l\'usage de l\'app pour l\'améliorer. '+
-    'Rien n\'est déposé sans ton accord, et tes parties ne sont jamais concernées.'+
+  b.innerHTML='<b>Mesure d\'audience</b>'+
+    '<p>On aimerait mesurer l\'usage de l\'app pour l\'améliorer.'+
     (ANALYTICS.policyUrl?' <a href="'+esc(ANALYTICS.policyUrl)+'" target="_blank" rel="noopener">En savoir plus</a>':'')+'</p>'+
     '<div class="crow"><button class="btn btn-ghost" id="cNo">Refuser</button>'+
     '<button class="btn btn-primary" id="cYes">Accepter</button></div>';
