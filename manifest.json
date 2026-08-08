@@ -1,18 +1,26 @@
 {
-  "name": "SwingUp - Carte de score de golf",
+  "name": "SwingUp - Golf Scorecard",
   "short_name": "SwingUp",
-  "description": "Application de carte de score de golf : saisie des scores trou par trou, calcul du handicap, suivi des parties et statistiques. Fonctionne hors ligne.",
+  "description": "Golf scorecard app: hole-by-hole score entry, handicap calculation, round tracking and statistics. Works offline.",
   "id": "/SwingUpPro/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["fullscreen", "standalone", "minimal-ui"],
+  "display_override": [
+    "fullscreen",
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#13361f",
   "theme_color": "#1b4332",
-  "lang": "fr-FR",
+  "lang": "en",
   "dir": "ltr",
-  "categories": ["sports", "utilities", "lifestyle"],
+  "categories": [
+    "sports",
+    "utilities",
+    "lifestyle"
+  ],
   "prefer_related_applications": false,
   "launch_handler": {
     "client_mode": "navigate-existing"
@@ -85,27 +93,11 @@
       "purpose": "any"
     }
   ],
-  "screenshots": [
-    {
-      "src": "screenshots/mobile-1.png",
-      "sizes": "540x1170",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Saisie des scores trou par trou"
-    },
-    {
-      "src": "screenshots/desktop-1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Vue d'ensemble de la carte de score"
-    }
-  ],
   "shortcuts": [
     {
-      "name": "Nouvelle partie",
-      "short_name": "Nouvelle",
-      "description": "Démarrer une nouvelle carte de score",
+      "name": "New round",
+      "short_name": "New",
+      "description": "Start a new scorecard",
       "url": "./?action=new",
       "icons": [
         {
@@ -116,9 +108,9 @@
       ]
     },
     {
-      "name": "Historique",
-      "short_name": "Historique",
-      "description": "Consulter les parties précédentes",
+      "name": "History",
+      "short_name": "History",
+      "description": "View previous rounds",
       "url": "./?view=history",
       "icons": [
         {
