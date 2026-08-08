@@ -2724,7 +2724,7 @@ async function recapBlob(){
   const NH=S.holes, players=S.players;
   const PAD=36, NAMEW=176, TOTW=120;
   const cellW=NH>18?46:(NH>12?54:64);
-  const rowH=56, headH=196, gapT=30, legH=56, footH=88;
+  const rowH=56, headH=228, gapT=30, legH=56, footH=88;
   const tableW=NAMEW+NH*cellW+TOTW;
   const W=PAD*2+tableW;
   const rows=2+players.length;
@@ -2747,16 +2747,16 @@ async function recapBlob(){
   ctx.textBaseline='alphabetic';
 
   /* Marque, centrée au-dessus du titre. */
-  ctx.font='900 36px '+F;
-  const bn='SwingUp', bw=ctx.measureText(bn).width, bs=42, bg=16;
+  ctx.font='900 54px '+F;
+  const bn='SwingUp', bw=ctx.measureText(bn).width, bs=60, bg=18;
   const bx=(W-(bs+bg+bw))/2;
-  drawFlag(ctx,bx,26,bs,'#f6f3e9');
+  drawFlag(ctx,bx,24,bs,'#f6f3e9');
   ctx.textAlign='left';ctx.fillStyle='#f6f3e9';
-  ctx.fillText(bn,bx+bs+bg,60);
+  ctx.fillText(bn,bx+bs+bg,72);
 
   /* Titre : le nom du parcours prend la vedette. */
   ctx.textAlign='center';ctx.font='900 38px '+F;ctx.fillStyle='#f6f3e9';
-  ctx.fillText(ellipsize(ctx,S.courseName||'Carte de score',W-PAD*2),W/2,130);
+  ctx.fillText(ellipsize(ctx,S.courseName||'Carte de score',W-PAD*2),W/2,158);
 
   const done=S.pars.map((_,h)=>players.every(p=>typeof p.scores[h]==='number')).filter(Boolean).length;
   const dt=new Date(S.started||Date.now());
@@ -2769,7 +2769,7 @@ async function recapBlob(){
   bits.push(done===NH?'Partie terminée':done+'/'+NH+' trous saisis');
   if(dateTxt)bits.push(dateTxt);
   ctx.font='500 15px '+O;ctx.fillStyle='rgba(246,243,233,.62)';
-  ctx.fillText(bits.join('   ·   '),W/2,160);
+  ctx.fillText(bits.join('   ·   '),W/2,190);
 
   /* Tableau, posé sur le crème comme les cartes de l'app. */
   const x0=PAD, y0=headH+gapT, totX=x0+NAMEW+NH*cellW;
