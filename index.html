@@ -1669,20 +1669,20 @@ const layoutOf=(c,r)=>(c.layouts||[]).find(l=>l.id===r.layoutId)||null;
    L'état vit dans users/{uid}/billing/status, écrit UNIQUEMENT par la
    Cloud Function qui reçoit le webhook Stripe. Le client ne fait que lire.
    Une copie locale sert de secours hors ligne.                           */
-let premium={status:'free',until:null,plan:null};
+let premium={status:'free',until:null,plan:null,sub:null};
 let accountCreated=null;   /* date de création du compte, pour l'antériorité bêta */
 const premKey=()=>'premium:'+uidKey();
 function readPremiumCache(){
   try{const r=Store.get(premKey());if(r)premium=JSON.parse(r);}catch(e){}
 }
 async function pullPremium(){
-  premium={status:'free',until:null,plan:null};
+  premium={status:'free',until:null,plan:null,sub:null};
   if(!fbReady||!currentUser){readPremiumCache();return;}
   try{
     const s=await fs.collection('users').doc(currentUser.uid).collection('billing').doc('status').get();
     if(s.exists){
       const d=s.data()||{};
-      premium={status:d.status||'free',until:d.currentPeriodEnd||null,plan:d.plan||null};
+      premium={status:d.status||'free',until:d.currentPeriodEnd||null,plan:d.plan||null,sub:d.stripeSubscriptionId||null};
     }
     Store.set(premKey(),JSON.stringify(premium));
   }catch(e){
@@ -3264,7 +3264,7 @@ function openDeleteAccount(){
   openModal('<h3>'+T('Supprimer mon compte')+'</h3>'+
     '<p class="txt">'+T('Cette action est définitive. Ton compte, tes golfs, tes parcours et toutes tes parties seront effacés.')+'</p>'+
     '<p class="warn">'+T('Il n\'y a aucun moyen de revenir en arrière.')+'</p>'+
-    (isPremium()&&premium.stripeSubscriptionId?'<p class="txt">'+T('Pense à résilier ton abonnement avant, depuis « Gérer mon abonnement ».')+'</p>':'')+
+    (isPremium()&&premium.sub?'<p class="txt">'+T('Pense à résilier ton abonnement avant, depuis « Gérer mon abonnement ».')+'</p>':'')+
     (parPass?'<label class="flabel" style="margin:16px 0 0">'+T('Mot de passe actuel')+'</label>'+
              '<input id="daPass" type="password" autocomplete="current-password">'
            :'<p class="txt">'+T('Une fenêtre Google va s\'ouvrir pour confirmer que c\'est bien toi.')+'</p>')+
@@ -3379,7 +3379,7 @@ if(fbReady){
       afterCheckout();
     }else{
       dbCache=null;profileName='';S=null;
-      premium={status:'free',until:null,plan:null};accountCreated=null;
+      premium={status:'free',until:null,plan:null,sub:null};accountCreated=null;
       setAuthMode('login');showAuth();
     }
   });
