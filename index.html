@@ -130,7 +130,7 @@ body.lock #game #finishWrap{flex:0 0 auto}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .sumstrip{display:flex;gap:1px;background:#e2dcc7;border-bottom:1px solid #e2dcc7}
 .sumstrip div{flex:1;background:var(--cream);padding:8px 6px;text-align:center}
-.sumstrip .n{font-family:var(--serif);font-weight:900;font-size:1.15rem;color:var(--green-deep);line-height:1.1}
+.sumstrip .n{font-family:'Outfit',system-ui,sans-serif;font-weight:700;font-size:1.18rem;color:var(--green-deep);line-height:1.1}
 .sumstrip .n.under{color:var(--green-mid)}
 .sumstrip .n.over{color:var(--flag)}
 .sumstrip .l{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:#8b8770;margin-top:3px}
@@ -139,7 +139,7 @@ body.lock #game #finishWrap{flex:0 0 auto}
 table.score{border-collapse:separate;border-spacing:0;font-size:.82rem;width:max-content;min-width:100%}
 table.score th,table.score td{padding:0;text-align:center;height:33px;min-width:34px;border-bottom:1px solid #e6e0cd;font-weight:500;color:#4a5a4f}
 table.score .hcol{position:sticky;left:0;z-index:2;min-width:94px;max-width:94px;text-align:left;padding:0 10px;background:var(--cream);border-right:1px solid #ddd6c0;font-weight:600;color:var(--green-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-table.score .totcol{position:sticky;right:0;z-index:2;min-width:46px;background:var(--cream);border-left:1px solid #ddd6c0;font-family:var(--serif);font-weight:900;color:var(--green-deep)}
+table.score .totcol{position:sticky;right:0;z-index:2;min-width:46px;background:var(--cream);border-left:1px solid #ddd6c0;font-family:'Outfit',system-ui,sans-serif;font-weight:700;color:var(--green-deep);letter-spacing:.01em}
 table.score thead th{background:#ece7d6;font-size:.7rem;letter-spacing:.06em;color:#8b8770;font-weight:700;text-transform:uppercase}
 table.score thead .hcol,table.score thead .totcol{background:#ece7d6}
 tr.parrow td,tr.parrow th{background:#f0ece0;font-weight:600;color:var(--green-mid)}
@@ -800,6 +800,9 @@ en:{
 'toi@exemple.fr':'you@example.com',
 'Langue':'Language',
 'Version bêta':'Beta version',
+'Accès complet offert':'Full access included',
+'jusqu\'au':'until',
+
 
 'Accepter':'Accept',
 'Refuser':'Decline',
@@ -972,6 +975,9 @@ es:{
 'toi@exemple.fr':'tu@ejemplo.com',
 'Langue':'Idioma',
 'Version bêta':'Versión beta',
+'Accès complet offert':'Acceso completo incluido',
+'jusqu\'au':'hasta el',
+
 
 'Accepter':'Aceptar',
 'Refuser':'Rechazar',
@@ -1144,6 +1150,9 @@ de:{
 'toi@exemple.fr':'du@beispiel.de',
 'Langue':'Sprache',
 'Version bêta':'Beta-Version',
+'Accès complet offert':'Voller Zugang inklusive',
+'jusqu\'au':'bis zum',
+
 
 'Accepter':'Akzeptieren',
 'Refuser':'Ablehnen',
@@ -2603,16 +2612,16 @@ async function recapBlob(){
   ctx.textBaseline='alphabetic';
 
   /* Marque, centrée au-dessus du titre. */
-  ctx.font='900 26px '+F;
-  const bn='SwingUp', bw=ctx.measureText(bn).width, bs=30, bg=13;
+  ctx.font='900 36px '+F;
+  const bn='SwingUp', bw=ctx.measureText(bn).width, bs=42, bg=16;
   const bx=(W-(bs+bg+bw))/2;
-  drawFlag(ctx,bx,32,bs,'#f6f3e9');
+  drawFlag(ctx,bx,26,bs,'#f6f3e9');
   ctx.textAlign='left';ctx.fillStyle='#f6f3e9';
-  ctx.fillText(bn,bx+bs+bg,56);
+  ctx.fillText(bn,bx+bs+bg,60);
 
   /* Titre : le nom du parcours prend la vedette. */
   ctx.textAlign='center';ctx.font='900 38px '+F;ctx.fillStyle='#f6f3e9';
-  ctx.fillText(ellipsize(ctx,S.courseName||'Carte de score',W-PAD*2),W/2,124);
+  ctx.fillText(ellipsize(ctx,S.courseName||'Carte de score',W-PAD*2),W/2,130);
 
   const done=S.pars.map((_,h)=>players.every(p=>typeof p.scores[h]==='number')).filter(Boolean).length;
   const dt=new Date(S.started||Date.now());
@@ -2625,7 +2634,7 @@ async function recapBlob(){
   bits.push(done===NH?'Partie terminée':done+'/'+NH+' trous saisis');
   if(dateTxt)bits.push(dateTxt);
   ctx.font='500 15px '+O;ctx.fillStyle='rgba(246,243,233,.62)';
-  ctx.fillText(bits.join('   ·   '),W/2,155);
+  ctx.fillText(bits.join('   ·   '),W/2,160);
 
   /* Tableau, posé sur le crème comme les cartes de l'app. */
   const x0=PAD, y0=headH+gapT, totX=x0+NAMEW+NH*cellW;
@@ -2663,7 +2672,7 @@ async function recapBlob(){
   ctx.fillText('PAR',x0+16,cy);
   ctx.textAlign='center';ctx.font='700 19px '+F;ctx.fillStyle='#2d6a4f';
   for(let h=0;h<NH;h++)ctx.fillText(String(S.pars[h]),colX(h)+cellW/2,cy);
-  ctx.fillText(String(parTot()),totX+TOTW/2,cy);
+  ctx.font='700 19px '+O;ctx.fillText(String(parTot()),totX+TOTW/2,cy);
 
   players.forEach((p,i)=>{
     const y=y0+(2+i)*rowH, my=y+rowH/2;
@@ -2681,7 +2690,7 @@ async function recapBlob(){
     }
     const tot=played(p), vp=vsPar(p);
     const any=p.scores.some(x=>x!==null);
-    ctx.font='900 20px '+F;ctx.fillStyle='#13361f';
+    ctx.font='700 21px '+O;ctx.fillStyle='#13361f';
     ctx.fillText(String(tot),totX+TOTW/2-(any?16:0),my);
     if(any){
       ctx.font='700 14px '+O;
@@ -3112,8 +3121,7 @@ $('#btnAccount').onclick=()=>{
   const jusqu=premium&&premium.until?' · jusqu\'au '+dmy(new Date(premium.until).toISOString()):'';
   let abo;
   if(BETA.actif){
-    abo='<div class="subline on"><b>Version bêta</b><span>Accès complet offert jusqu\'au '+esc(BETA.fin)+
-        '. Ton compte gardera cet accès ensuite.</span></div>';
+    abo='<div class="subline on"><b>'+T('Version bêta')+'</b><span>'+T('Accès complet offert')+' '+T("jusqu'au")+' '+esc(BETA.fin)+'</span></div>';
   }else if(isBetaTester()){
     abo='<div class="subline on"><b>Accès bêta-testeur</b><span>Accès complet conservé, sans abonnement. Merci d\'avoir été là au début.</span></div>';
   }else if(ok){
@@ -3129,8 +3137,6 @@ $('#btnAccount').onclick=()=>{
       (byPass?'':' <span class="propill">Google</span>')+'.</p>'+
     abo+
     '<input id="mName" type="text" maxlength="14" value="'+esc(profileName)+'" placeholder="Ton nom (joueur 1)">'+
-    '<label class="flabel" style="margin:16px 0 0">'+T('Langue')+'</label>'+
-    '<select id="mLang">'+LANGUES.map(l=>'<option value="'+l+'"'+(l===LANG?' selected':'')+'>'+NOMS_LANGUES[l]+'</option>').join('')+'</select>'+
     '<div class="accbtns">'+
       (byPass
         ? '<button class="btn btn-ghost" id="mEmail">'+T('Changer d\'adresse e-mail')+'</button>'+
@@ -3141,7 +3147,6 @@ $('#btnAccount').onclick=()=>{
     '<p class="modpriv"><a href="'+PAGE_POLITIQUE()+'" target="_blank" rel="noopener">'+T('Politique de confidentialité')+'</a></p>');
   const up=$('#mUp');if(up)up.onclick=()=>{closeModal();openPaywall('compte');};
   const po=$('#mPortal');if(po)po.onclick=openPortal;
-  const ml=$('#mLang');if(ml)ml.onchange=()=>changerLangue(ml.value);
   const me=$('#mEmail');if(me)me.onclick=openChangeEmail;
   const mp=$('#mPass');if(mp)mp.onclick=openChangePass;
   $('#mOk').onclick=async()=>{
