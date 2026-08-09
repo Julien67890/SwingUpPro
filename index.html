@@ -137,7 +137,7 @@ body.lock #game #finishWrap{flex:0 0 auto}
 .tscroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tscroll::-webkit-scrollbar{display:none}
 table.score{border-collapse:separate;border-spacing:0;font-size:.82rem;width:max-content;min-width:100%}
-table.score th,table.score td{padding:0;text-align:center;height:33px;min-width:34px;border-bottom:1px solid #e6e0cd;font-weight:500;color:#4a5a4f}
+table.score th,table.score td{padding:0 2px;text-align:center;height:40px;min-width:42px;border-bottom:1px solid #e6e0cd;font-weight:500;color:#4a5a4f}
 table.score .hcol{position:sticky;left:0;z-index:2;min-width:94px;max-width:94px;text-align:left;padding:0 10px;background:var(--cream);border-right:1px solid #ddd6c0;font-weight:600;color:var(--green-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 table.score .totcol{position:sticky;right:0;z-index:2;min-width:46px;background:var(--cream);border-left:1px solid #ddd6c0;font-family:'Outfit',system-ui,sans-serif;font-weight:700;color:var(--green-deep);letter-spacing:.01em}
 table.score thead th{background:#ece7d6;font-size:.7rem;letter-spacing:.06em;color:#8b8770;font-weight:700;text-transform:uppercase}
@@ -154,7 +154,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .pip-name{display:inline-flex;align-items:center;gap:7px;max-width:100%}
 .pip-name i{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
 .pip-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sc{display:inline-grid;place-items:center;width:29px;height:29px;margin-top:3px;font-weight:600;color:#2c3a30}
+.sc{display:inline-grid;place-items:center;width:27px;height:27px;font-weight:600;color:#2c3a30;vertical-align:middle}
 .sc.birdie{border:1.6px solid var(--green-mid);border-radius:50%;color:var(--green-mid)}
 .sc.eagle{border:1.6px solid var(--green-mid);border-radius:50%;color:var(--green-mid);box-shadow:0 0 0 2.6px var(--cream),0 0 0 4.2px var(--green-mid)}
 .sc.bogey{border:1.6px solid var(--flag);border-radius:6px;color:var(--flag)}
@@ -351,7 +351,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
 .btn-share{background:#fff;color:var(--green-mid);border:1.5px solid var(--green-mid)}
 
 /* Évolution : 10 parties visibles (+ en-tête, Par et Moyenne), puis défilement */
-#stEvo .tscroll{overflow-y:auto;max-height:429px;scrollbar-width:thin;scrollbar-color:#cdc7b1 transparent}
+#stEvo .tscroll{overflow-y:auto;max-height:520px;scrollbar-width:thin;scrollbar-color:#cdc7b1 transparent}
 #stEvo .tscroll::-webkit-scrollbar{width:6px;height:6px}
 #stEvo .tscroll::-webkit-scrollbar-thumb{background:#cdc7b1;border-radius:99px}
 #stEvo table.score thead th{position:sticky;top:0;z-index:3}
@@ -2729,11 +2729,18 @@ async function recapBlob(){
   const W=PAD*2+tableW;
   const rows=2+players.length;
   const HT=headH+gapT+rows*rowH+legH+footH;
-  const scale=W>1100?1.5:2;
+  /* Une carte 18 trous est bien plus large qu'une 9 trous. Sans
+     correction, les textes gardent leur taille absolue et paraissent
+     minuscules une fois l'image réduite à la largeur d'un écran.
+     On agrandit donc tout le dessin dans la même proportion : la carte
+     9 trous sert de référence, les autres lui restent semblables. */
+  const REF=944;
+  const k=Math.max(1,W/REF);
+  const scale=(W>1100?1.5:2);
 
   const cvs=document.createElement('canvas');
-  cvs.width=Math.round(W*scale);cvs.height=Math.round(HT*scale);
-  const ctx=cvs.getContext('2d');ctx.scale(scale,scale);
+  cvs.width=Math.round(W*k*scale);cvs.height=Math.round(HT*k*scale);
+  const ctx=cvs.getContext('2d');ctx.scale(k*scale,k*scale);
 
   /* Fond crème : la surface de référence de l'app. */
   ctx.fillStyle='#f6f3e9';ctx.fillRect(0,0,W,HT);
