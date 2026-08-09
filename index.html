@@ -800,6 +800,13 @@ en:{
 'toi@exemple.fr':'you@example.com',
 'Langue':'Language',
 'Version bêta':'Beta version',
+'Aucune partie':'No round',
+'Offre gratuite':'Free plan',
+'sans rattacher à un golf':'without linking to a course',
+
+'Date':'Date',
+'Moyenne':'Average',
+
 '{n} parcours':'{n} layouts',
 'trous':'holes',
 '{a} trous sur {b} saisis pour l\'instant.':'{a} of {b} holes entered so far.',
@@ -1065,6 +1072,13 @@ es:{
 'toi@exemple.fr':'tu@ejemplo.com',
 'Langue':'Idioma',
 'Version bêta':'Versión beta',
+'Aucune partie':'Ninguna partida',
+'Offre gratuite':'Plan gratuito',
+'sans rattacher à un golf':'sin asociar a un campo',
+
+'Date':'Fecha',
+'Moyenne':'Media',
+
 '{n} parcours':'{n} recorridos',
 'trous':'hoyos',
 '{a} trous sur {b} saisis pour l\'instant.':'{a} de {b} hoyos registrados por ahora.',
@@ -1330,6 +1344,13 @@ de:{
 'toi@exemple.fr':'du@beispiel.de',
 'Langue':'Sprache',
 'Version bêta':'Beta-Version',
+'Aucune partie':'Keine Runde',
+'Offre gratuite':'Kostenlos',
+'sans rattacher à un golf':'ohne Zuordnung zu einem Golfplatz',
+
+'Date':'Datum',
+'Moyenne':'Schnitt',
+
 '{n} parcours':'{n} Plätze',
 'trous':'Löcher',
 '{a} trous sur {b} saisis pour l\'instant.':'Bisher {a} von {b} Löchern erfasst.',
@@ -1891,7 +1912,7 @@ function fieldsUI(){
 $('#fGolf').onclick=()=>{
   const db=loadDB();
   let html='<h3>'+T('Quel golf ?')+'</h3><p class="txt">'+T('Choisis un golf enregistré pour retrouver ses parcours et leurs pars.')+'</p><div class="list">'+
-    '<button data-g="free"><span style="flex:1;min-width:0"><b>Partie libre</b><span>sans rattacher à un golf</span></span></button>';
+    '<button data-g="free"><span style="flex:1;min-width:0"><b>'+T('Partie libre')+'</b><span>'+T('sans rattacher à un golf')+'</span></span></button>';
   db.courses.forEach(c=>{
     const nl=(c.layouts||[]).length;
     html+='<button data-g="'+c.id+'" data-n="'+esc(c.name)+'"><span style="flex:1;min-width:0"><b>'+esc(c.name)+'</b>'+
@@ -2440,7 +2461,7 @@ function renderStats(wantLayout){
 
   const list=$('#stRounds');list.innerHTML='';
   if(!rows.length){
-    list.innerHTML='<div class="rcard" style="cursor:default"><div class="d">—</div><div class="g">Aucune partie</div><div class="foot"><b>—</b></div></div>';
+    list.innerHTML='<div class="rcard" style="cursor:default"><div class="d">—</div><div class="g">'+T('Aucune partie')+'</div><div class="foot"><b>—</b></div></div>';
   }
   shown.forEach(x=>{
     const div=document.createElement('div');div.className='rcard';
@@ -2497,14 +2518,14 @@ function renderStats(wantLayout){
   if(ok){
     const H=rows[0].H;
     const ref=rows[0].L&&Array.isArray(rows[0].L.pars)&&rows[0].L.pars.length===H?rows[0].L.pars:rows[rows.length-1].r.pars;
-    let head='<thead><tr><th class="hcol">Date</th>';
+    let head='<thead><tr><th class="hcol">'+T('Date')+'</th>';
     for(let h=0;h<H;h++)head+='<th>'+(h+1)+'</th>';
-    head+='<th class="totcol">Tot</th></tr></thead>';
-    let body='<tbody><tr class="parrow"><th class="hcol">Par</th>';
+    head+='<th class="totcol">'+T('Tot')+'</th></tr></thead>';
+    let body='<tbody><tr class="parrow"><th class="hcol">'+T('Par')+'</th>';
     for(let h=0;h<H;h++)body+='<td>'+(ref[h]||4)+'</td>';
     body+='<td class="totcol">'+ref.reduce((a,b)=>a+b,0)+'</td></tr>';
     const avgTot=rows.reduce((a,x)=>a+x.tot,0)/rows.length;
-    body+='<tr class="parrow"><th class="hcol">Moyenne</th>';
+    body+='<tr class="parrow"><th class="hcol">'+T('Moyenne')+'</th>';
     for(let h=0;h<H;h++){
       const vals=rows.map(x=>x.p.scores[h]).filter(s=>typeof s==='number');
       const a=vals.length?vals.reduce((u,v)=>u+v,0)/vals.length:null;
@@ -3501,7 +3522,7 @@ $('#btnAccount').onclick=()=>{
     abo='<div class="subline on"><b>'+esc(PREMIUM.name)+'</b><span>'+(premium.status==='trialing'?'Période d\'essai':'Abonnement actif')+jusqu+'</span></div>'
        +(PREMIUM.portalUrl?'<button class="btn btn-ghost" id="mPortal" style="margin-top:10px">'+T('Gérer mon abonnement')+'</button>':'');
   }else{
-    abo='<div class="subline"><b>Offre gratuite</b><span>Statistiques détaillées verrouillées</span></div>'
+    abo='<div class="subline"><b>'+T('Offre gratuite')+'</b><span>Statistiques détaillées verrouillées</span></div>'
        +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">'+T('Découvrir Premium')+'</button>';
   }
   const byPass=hasPasswordProvider();
