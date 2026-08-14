@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "io.github.julien67890.twa",
-        "sha256_cert_fingerprints": ["6A:62:58:6A:FE:3E:74:F2:A9:93:03:AE:79:73:11:2E:F5:7D:18:EE:F9:AD:07:EB:B6:69:5F:1C:4D:CA:56:B8"]
+        "package_name": "app.emqgroup.swingupscorecard",
+        "sha256_cert_fingerprints": ["A5:50:7D:66:3D:59:71:FE:79:3C:67:C8:84:C1:F0:21:F3:E4:7B:CC:CC:E7:E9:BA:11:DA:32:77:3B:E9:0B:43"]
       }
     }]
