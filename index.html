@@ -535,6 +535,7 @@ thead .col-now{background:#dcecdf!important;color:var(--green-deep)!important}
         Continuer avec Google
       </button>
       <button class="authlink" id="btnReset">Mot de passe oublié ?</button>
+      <button class="authlink" id="btnGuest">Continuer sans compte</button>
     </div>
     <p class="footnote">Tes parties sont enregistrées sur ton compte<br>et te suivent sur tous tes appareils.</p><p class="footnote"><a class="privlink" href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>
   </div>
@@ -737,6 +738,10 @@ en:{
 'Connecte-toi pour retrouver tes parties':'Sign in to find your rounds',
 'Se connecter':'Sign in',
 'Créer un compte':'Create account',
+'Continuer sans compte':'Continue without an account',
+'Mode invité : tes parties restent uniquement sur cet appareil, rien n\'est envoyé en ligne.':'Guest mode: your rounds stay on this device only, nothing is sent online.',
+'Crée un compte pour retrouver tes parties sur tous tes appareils.':'Create an account to find your rounds on all your devices.',
+'Quitter le mode invité':'Leave guest mode',
 'Prénom / pseudo':'First name / nickname',
 'Adresse e-mail':'Email address',
 'Mot de passe':'Password',
@@ -1009,6 +1014,10 @@ es:{
 'Connecte-toi pour retrouver tes parties':'Inicia sesión para recuperar tus partidas',
 'Se connecter':'Iniciar sesión',
 'Créer un compte':'Crear una cuenta',
+'Continuer sans compte':'Continuar sin cuenta',
+'Mode invité : tes parties restent uniquement sur cet appareil, rien n\'est envoyé en ligne.':'Modo invitado: tus partidas se quedan solo en este dispositivo, nada se envía en línea.',
+'Crée un compte pour retrouver tes parties sur tous tes appareils.':'Crea una cuenta para encontrar tus partidas en todos tus dispositivos.',
+'Quitter le mode invité':'Salir del modo invitado',
 'Prénom / pseudo':'Nombre / apodo',
 'Adresse e-mail':'Correo electrónico',
 'Mot de passe':'Contraseña',
@@ -1281,6 +1290,10 @@ de:{
 'Connecte-toi pour retrouver tes parties':'Melde dich an, um deine Runden zu finden',
 'Se connecter':'Anmelden',
 'Créer un compte':'Konto erstellen',
+'Continuer sans compte':'Ohne Konto fortfahren',
+'Mode invité : tes parties restent uniquement sur cet appareil, rien n\'est envoyé en ligne.':'Gastmodus: Deine Runden bleiben nur auf diesem Gerät, nichts wird online gesendet.',
+'Crée un compte pour retrouver tes parties sur tous tes appareils.':'Erstelle ein Konto, um deine Runden auf allen Geräten wiederzufinden.',
+'Quitter le mode invité':'Gastmodus verlassen',
 'Prénom / pseudo':'Vorname / Spitzname',
 'Adresse e-mail':'E-Mail-Adresse',
 'Mot de passe':'Passwort',
@@ -1722,6 +1735,7 @@ const Store=(()=>{let mem={};let ok=true;try{localStorage.setItem('__t','1');loc
 
 /* ---------- session utilisateur ---------- */
 let currentUser=null;
+let isGuest=false;   /* true = mode invité, données 100% locales, jamais synchronisées */
 let profileName='';
 let dbCache=null;
 const uidKey=()=>currentUser?currentUser.uid:'anon';
@@ -3372,6 +3386,23 @@ $('#btnReset').onclick=async()=>{
   catch(e){authError(authMsg(e.code));}
 };
 
+/* ---------- mode invité ----------
+   Aucune connexion Firebase : uidKey() retombe déjà sur 'anon', donc
+   pullDB()/pullPremium() chargent simplement le stockage local existant.
+   Rien n'est jamais envoyé au cloud tant qu'on reste en mode invité. */
+$('#btnGuest').onclick=async()=>{
+  isGuest=true;currentUser=null;
+  profileName=Store.get('pname:anon')||'';
+  await pullDB();
+  await pullPremium();
+  enterApp();
+};
+function leaveGuest(){
+  isGuest=false;dbCache=null;profileName='';S=null;
+  premium={status:'free',until:null,plan:null,sub:null};accountCreated=null;
+  setAuthMode('login');showAuth();
+}
+
 /* ---------- modification des identifiants ----------
    Firebase exige une connexion récente pour ces opérations : on redemande
    donc le mot de passe actuel avant chaque changement.               */
@@ -3526,26 +3557,37 @@ $('#btnAccount').onclick=()=>{
        +'<button class="btn btn-primary" id="mUp" style="margin-top:10px">'+T('Découvrir Premium')+'</button>';
   }
   const byPass=hasPasswordProvider();
+  const idLine=isGuest
+    ? '<p class="txt">'+T('Mode invité : tes parties restent uniquement sur cet appareil, rien n\'est envoyé en ligne.')+'</p>'
+    : '<p class="txt">Connecté·e en tant que <b>'+esc(currentUser?currentUser.email:'')+'</b>'+
+      (byPass?'':' <span class="propill">Google</span>')+'.</p>';
   openModal('<h3>'+T('Mon compte')+'</h3>'+
-    '<p class="txt">Connecté·e en tant que <b>'+esc(currentUser?currentUser.email:'')+'</b>'+
-      (byPass?'':' <span class="propill">Google</span>')+'.</p>'+
+    idLine+
     abo+
     '<input id="mName" type="text" maxlength="14" value="'+esc(profileName)+'" placeholder="'+T('Ton nom (joueur 1)')+'">'+
     '<div class="accbtns">'+
-      (byPass
-        ? '<button class="btn btn-ghost" id="mEmail">'+T('Changer d\'adresse e-mail')+'</button>'+
-          '<button class="btn btn-ghost" id="mPass">'+T('Changer de mot de passe')+'</button>'
-        : '<p class="hintsm">Ton compte utilise la connexion Google : l\'adresse e-mail et le mot de passe se gèrent depuis ton compte Google.</p>')+
+      (isGuest
+        ? '<p class="hintsm">'+T('Crée un compte pour retrouver tes parties sur tous tes appareils.')+'</p>'
+        : byPass
+          ? '<button class="btn btn-ghost" id="mEmail">'+T('Changer d\'adresse e-mail')+'</button>'+
+            '<button class="btn btn-ghost" id="mPass">'+T('Changer de mot de passe')+'</button>'
+          : '<p class="hintsm">Ton compte utilise la connexion Google : l\'adresse e-mail et le mot de passe se gèrent depuis ton compte Google.</p>')+
     '</div>'+
-    '<div class="row"><button class="btn btn-ghost" id="mLogout">'+T('Se déconnecter')+'</button><button class="btn btn-primary" id="mOk">'+T('Enregistrer')+'</button></div>'+
-    '<button class="authlink" id="mDel" style="color:var(--bad)">'+T('Supprimer mon compte')+'</button>'+
+    '<div class="row"><button class="btn btn-ghost" id="mLogout">'+(isGuest?T('Quitter le mode invité'):T('Se déconnecter'))+'</button>'+
+      (isGuest?'<button class="btn btn-primary" id="mSignup">'+T('Créer un compte')+'</button>':'<button class="btn btn-primary" id="mOk">'+T('Enregistrer')+'</button>')+
+    '</div>'+
+    (isGuest?'':'<button class="authlink" id="mDel" style="color:var(--bad)">'+T('Supprimer mon compte')+'</button>')+
     '<p class="modpriv"><a href="'+PAGE_POLITIQUE()+'" target="_blank" rel="noopener">'+T('Politique de confidentialité')+'</a></p>');
   const up=$('#mUp');if(up)up.onclick=()=>{closeModal();openPaywall('compte');};
   const po=$('#mPortal');if(po)po.onclick=openPortal;
   const md=$('#mDel');if(md)md.onclick=()=>{closeModal();openDeleteAccount();};
   const me=$('#mEmail');if(me)me.onclick=openChangeEmail;
   const mp=$('#mPass');if(mp)mp.onclick=openChangePass;
-  $('#mOk').onclick=async()=>{
+  const ms=$('#mSignup');if(ms)ms.onclick=()=>{
+    const v=$('#mName').value.trim();if(v)pendingName=v;
+    closeModal();leaveGuest();setAuthMode('signup');
+  };
+  const mo=$('#mOk');if(mo)mo.onclick=async()=>{
     const v=$('#mName').value.trim();
     if(v&&v!==profileName){
       profileName=v;
@@ -3554,7 +3596,14 @@ $('#btnAccount').onclick=()=>{
     }
     closeModal();
   };
-  $('#mLogout').onclick=async()=>{closeModal();try{await auth.signOut();}catch(e){}};
+  $('#mLogout').onclick=async()=>{
+    const v=$('#mName').value.trim();
+    if(isGuest){
+      if(v&&v!==profileName){profileName=v;Store.set('pname:anon',v);}
+      closeModal();leaveGuest();return;
+    }
+    closeModal();try{await auth.signOut();}catch(e){}
+  };
 };
 
 appliquerLangue();
